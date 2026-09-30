@@ -1,0 +1,66 @@
+{
+  "@@locale": "en",
+  "products": "Products",
+  "addProduct": "Add product",
+  "editProduct": "Edit product",
+  "deleteProduct": "Delete product",
+  "productName": "Product name",
+  "productDescription": "Description",
+  "category": "Category",
+  "price": "Price",
+  "salePrice": "Sale price",
+  "imageUrl": "Image URL",
+  "attributes": "Options and stock",
+  "actions": "Actions",
+  "attributeTitle": "Option group (for example, Size)",
+  "addAttribute": "Add option group",
+  "removeAttribute": "Remove option group",
+  "addOption": "Add option",
+  "removeOption": "Remove option",
+  "optionValue": "Option value",
+  "priceModifier": "Price modifier",
+  "stock": "Stock",
+  "available": "Available",
+  "outOfStock": "Out of stock",
+  "cancel": "Cancel",
+  "save": "Save product",
+  "update": "Update product",
+  "retry": "Retry",
+  "productsEmpty": "No products yet",
+  "productsLoadError": "Products could not be loaded.",
+  "permissionDenied": "You do not have permission to manage products.",
+  "networkError": "Check your connection and try again.",
+  "unknownError": "Something went wrong. Please try again.",
+  "productAdded": "Product added.",
+  "productUpdated": "Product updated.",
+  "productDeleted": "Product deleted.",
+  "productAddError": "Product could not be added.",
+  "productUpdateError": "Product could not be updated.",
+  "productDeleteError": "Product could not be deleted.",
+  "deleteProductTitle": "Delete product?",
+  "deleteProductMessage": "Delete {name}? This cannot be undone.",
+  "@@deleteProductMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "requiredField": "{field} is required.",
+  "@@requiredField": {
+    "placeholders": {
+      "field": { "type": "String" }
+    }
+  },
+  "invalidPrice": "Enter a valid non-negative amount.",
+  "invalidStock": "Enter a whole number of zero or more.",
+  "invalidImageUrl": "Enter a valid HTTP or HTTPS image URL.",
+  "selectCategory": "Select a category",
+  "noCategories": "Add a category before creating a product.",
+   "unknownCategory": "Unknown category",
+  "productImage": "Image of {name}",
+  "@@productImage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "currencyCode": "EGP"
+}

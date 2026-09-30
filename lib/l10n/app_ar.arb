@@ -1,0 +1,66 @@
+{
+  "@@locale": "ar",
+  "products": "المنتجات",
+  "addProduct": "إضافة منتج",
+  "editProduct": "تعديل المنتج",
+  "deleteProduct": "حذف المنتج",
+  "productName": "اسم المنتج",
+  "productDescription": "الوصف",
+  "category": "الفئة",
+  "price": "السعر",
+  "salePrice": "سعر التخفيض",
+  "imageUrl": "رابط الصورة",
+  "attributes": "الخيارات والمخزون",
+  "actions": "الإجراءات",
+  "attributeTitle": "مجموعة الخيارات (مثال: الحجم)",
+  "addAttribute": "إضافة مجموعة خيارات",
+  "removeAttribute": "إزالة مجموعة الخيارات",
+  "addOption": "إضافة خيار",
+  "removeOption": "إزالة الخيار",
+  "optionValue": "قيمة الخيار",
+  "priceModifier": "تعديل السعر",
+  "stock": "المخزون",
+  "available": "متوفر",
+  "outOfStock": "نفد المخزون",
+  "cancel": "إلغاء",
+  "save": "حفظ المنتج",
+  "update": "تحديث المنتج",
+  "retry": "إعادة المحاولة",
+  "productsEmpty": "لا توجد منتجات بعد",
+  "productsLoadError": "تعذر تحميل المنتجات.",
+  "permissionDenied": "ليس لديك صلاحية لإدارة المنتجات.",
+  "networkError": "تحقق من الاتصال وحاول مرة أخرى.",
+  "unknownError": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+  "productAdded": "تمت إضافة المنتج.",
+  "productUpdated": "تم تحديث المنتج.",
+  "productDeleted": "تم حذف المنتج.",
+  "productAddError": "تعذرت إضافة المنتج.",
+  "productUpdateError": "تعذر تحديث المنتج.",
+  "productDeleteError": "تعذر حذف المنتج.",
+  "deleteProductTitle": "حذف المنتج؟",
+  "deleteProductMessage": "هل تريد حذف {name}؟ لا يمكن التراجع عن ذلك.",
+  "@@deleteProductMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "requiredField": "حقل {field} مطلوب.",
+  "@@requiredField": {
+    "placeholders": {
+      "field": { "type": "String" }
+    }
+  },
+  "invalidPrice": "أدخل مبلغاً صالحاً أكبر من أو يساوي صفراً.",
+  "invalidStock": "أدخل عدداً صحيحاً أكبر من أو يساوي صفراً.",
+  "invalidImageUrl": "أدخل رابط صورة صالحاً يبدأ بـ HTTP أو HTTPS.",
+  "selectCategory": "اختر فئة",
+  "noCategories": "أضف فئة قبل إنشاء منتج.",
+   "unknownCategory": "فئة غير معروفة",
+  "productImage": "صورة {name}",
+  "@@productImage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "currencyCode": "EGP"
+}

@@ -1,0 +1,9 @@
+state: bloc
+models: manual
+structure: feature_first
+di: get_it
+routing: go_router
+tokens: theme_extension
+l10n: arb
+locales: [en, ar]
+strictness: block

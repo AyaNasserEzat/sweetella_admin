@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "987584025880",
+    "project_id": "sweetella-39370",
+    "storage_bucket": "sweetella-39370.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987584025880:android:da9a35e1cf16d82b56fa6d",
+        "android_client_info": {
+          "package_name": "com.example.sweetella"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoDqdgau2cQVgU53YIzeFsk0FZVQPZ4IA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987584025880:android:455545d4db7335e156fa6d",
+        "android_client_info": {
+          "package_name": "com.example.sweetella_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoDqdgau2cQVgU53YIzeFsk0FZVQPZ4IA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
