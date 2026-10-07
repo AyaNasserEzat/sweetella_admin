@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sweetella_admin/core/error/failure.dart';
 import 'package:sweetella_admin/core/extension/localization_extension.dart';
-import 'package:sweetella_admin/features/products/domain/errors/product_failure.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_state.dart';
 
@@ -52,13 +52,15 @@ class ProductOperationListener extends StatelessWidget {
 
   String _failureMessage(
     BuildContext context,
-    ProductFailureKind failure,
+    Failure failure,
     String fallback,
   ) {
-    return switch (failure) {
-      ProductFailureKind.permissionDenied => context.l10n.permissionDenied,
-      ProductFailureKind.unavailable => context.l10n.networkError,
-      ProductFailureKind.invalidData || ProductFailureKind.unknown => fallback,
+    return switch (failure.kind) {
+      FailureKind.unauthorized ||
+      FailureKind.forbidden => context.l10n.permissionDenied,
+      FailureKind.network => context.l10n.networkError,
+      FailureKind.invalidData || FailureKind.unknown => fallback,
+      _ => fallback,
     };
   }
 }

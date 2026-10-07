@@ -96,7 +96,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get permissionDenied => 'ليس لديك صلاحية لإدارة المنتجات.';
 
   @override
-  String get networkError => 'تحقق من الاتصال وحاول مرة أخرى.';
+  String get networkError =>
+      'يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.';
 
   @override
   String get unknownError => 'حدث خطأ. يرجى المحاولة مرة أخرى.';
@@ -157,4 +158,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get currencyCode => 'EGP';
+
+  @override
+  String get unauthorizedError => 'غير مصرح لك. يرجى تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get forbiddenError => 'ليس لديك صلاحية لتنفيذ هذا الإجراء.';
+
+  @override
+  String get notFoundError => 'لم يتم العثور على البيانات المطلوبة.';
+
+  @override
+  String get invalidDataError => 'البيانات المدخلة غير صالحة.';
+
+  @override
+  String get serverError => 'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get generalError => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get platformError => 'حدث خطأ في النظام. يرجى المحاولة مرة أخرى.';
 }

@@ -44,6 +44,8 @@ dependencies:
   firebase_core: ^4.15.0
   firebase_storage: ^13.6.0
   flutter_bloc: ^9.1.1
+  dio: ^5.11.1
+  dartz: ^0.10.1
 
 dev_dependencies:
   flutter_test:

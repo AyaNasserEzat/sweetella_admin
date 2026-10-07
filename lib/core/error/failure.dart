@@ -1,4 +1,17 @@
 class Failure {
-  final String message;
-  const Failure(this.message);
+  const Failure(this.kind);
+
+  final FailureKind kind;
+}
+
+enum FailureKind {
+  network,
+  unauthorized,
+  forbidden,
+  notFound,
+  invalidData,
+  server,
+  firebase,
+  platform,
+  unknown,
 }

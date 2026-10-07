@@ -1,6 +1,5 @@
+import 'package:sweetella_admin/core/error/failure.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
-import 'package:sweetella_admin/features/products/domain/entities/product_category.dart';
-import 'package:sweetella_admin/features/products/domain/errors/product_failure.dart';
 
 sealed class ProductState {
   const ProductState();
@@ -15,73 +14,51 @@ final class ProductLoading extends ProductState {
 }
 
 sealed class ProductDataState extends ProductState {
-  const ProductDataState({required this.products, required this.categories});
+  const ProductDataState({required this.products});
 
   final List<Product> products;
-  final List<ProductCategory> categories;
 }
 
 final class ProductLoadSuccess extends ProductDataState {
-  const ProductLoadSuccess({
-    required super.products,
-    required super.categories,
-  });
+  const ProductLoadSuccess({required super.products});
 }
 
 final class ProductEmpty extends ProductDataState {
-  const ProductEmpty({required super.categories}) : super(products: const []);
+  const ProductEmpty() : super(products: const []);
 }
 
 final class ProductLoadError extends ProductState {
   const ProductLoadError(this.failure);
 
-  final ProductFailureKind failure;
+  final Failure failure;
 }
 
 final class ProductAddSuccess extends ProductDataState {
-  const ProductAddSuccess({required super.products, required super.categories});
+  const ProductAddSuccess({required super.products});
 }
 
 final class ProductAddError extends ProductDataState {
-  const ProductAddError({
-    required this.failure,
-    required super.products,
-    required super.categories,
-  });
+  const ProductAddError({required this.failure, required super.products});
 
-  final ProductFailureKind failure;
+  final Failure failure;
 }
 
 final class ProductUpdateSuccess extends ProductDataState {
-  const ProductUpdateSuccess({
-    required super.products,
-    required super.categories,
-  });
+  const ProductUpdateSuccess({required super.products});
 }
 
 final class ProductUpdateError extends ProductDataState {
-  const ProductUpdateError({
-    required this.failure,
-    required super.products,
-    required super.categories,
-  });
+  const ProductUpdateError({required this.failure, required super.products});
 
-  final ProductFailureKind failure;
+  final Failure failure;
 }
 
 final class ProductDeleteSuccess extends ProductDataState {
-  const ProductDeleteSuccess({
-    required super.products,
-    required super.categories,
-  });
+  const ProductDeleteSuccess({required super.products});
 }
 
 final class ProductDeleteError extends ProductDataState {
-  const ProductDeleteError({
-    required this.failure,
-    required super.products,
-    required super.categories,
-  });
+  const ProductDeleteError({required this.failure, required super.products});
 
-  final ProductFailureKind failure;
+  final Failure failure;
 }

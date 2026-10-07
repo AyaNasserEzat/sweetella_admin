@@ -275,7 +275,7 @@ abstract class AppLocalizations {
   /// No description provided for @networkError.
   ///
   /// In en, this message translates to:
-  /// **'Check your connection and try again.'**
+  /// **'Please check your internet connection and try again.'**
   String get networkError;
 
   /// No description provided for @unknownError.
@@ -385,6 +385,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'EGP'**
   String get currencyCode;
+
+  /// No description provided for @unauthorizedError.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized. Please sign in again.'**
+  String get unauthorizedError;
+
+  /// No description provided for @forbiddenError.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission to perform this action.'**
+  String get forbiddenError;
+
+  /// No description provided for @notFoundError.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested resource was not found.'**
+  String get notFoundError;
+
+  /// No description provided for @invalidDataError.
+  ///
+  /// In en, this message translates to:
+  /// **'The provided data is invalid.'**
+  String get invalidDataError;
+
+  /// No description provided for @serverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong on the server. Please try again later.'**
+  String get serverError;
+
+  /// No description provided for @generalError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get generalError;
+
+  /// No description provided for @platformError.
+  ///
+  /// In en, this message translates to:
+  /// **'A platform error occurred. Please try again.'**
+  String get platformError;
 }
 
 class _AppLocalizationsDelegate

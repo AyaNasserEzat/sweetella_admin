@@ -6,6 +6,7 @@ class ProductModel {
     required this.id,
     required this.name,
     required this.categoryId,
+    required this.categoryName,
     required this.description,
     required this.price,
     required this.salePrice,
@@ -26,6 +27,7 @@ class ProductModel {
       id: document.id,
       name: data['name'] as String? ?? '',
       categoryId: data['categoryId'] as String? ?? '',
+      categoryName: data['categoryName'] as String? ?? '',
       description: data['description'] as String? ?? '',
       price: (data['price'] as num?)?.toInt() ?? 0,
       salePrice: (data['salePrice'] as num?)?.toInt() ?? 0,
@@ -60,6 +62,7 @@ class ProductModel {
       id: product.id,
       name: product.name,
       categoryId: product.categoryId,
+      categoryName: product.categoryName,
       description: product.description,
       price: product.price,
       salePrice: product.salePrice,
@@ -71,6 +74,7 @@ class ProductModel {
   final String id;
   final String name;
   final String categoryId;
+  final String categoryName;
   final String description;
   final int price;
   final int salePrice;
@@ -82,6 +86,7 @@ class ProductModel {
       id: id,
       name: name,
       categoryId: categoryId,
+      categoryName: categoryName,
       description: description,
       price: price,
       salePrice: salePrice,
@@ -94,6 +99,7 @@ class ProductModel {
     return {
       'id': id,
       'categoryId': categoryId,
+      'categoryName': categoryName,
       'name': name,
       'description': description,
       'price': price,

@@ -97,7 +97,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'You do not have permission to manage products.';
 
   @override
-  String get networkError => 'Check your connection and try again.';
+  String get networkError =>
+      'Please check your internet connection and try again.';
 
   @override
   String get unknownError => 'Something went wrong. Please try again.';
@@ -158,4 +159,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currencyCode => 'EGP';
+
+  @override
+  String get unauthorizedError =>
+      'You are not authorized. Please sign in again.';
+
+  @override
+  String get forbiddenError =>
+      'You don\'t have permission to perform this action.';
+
+  @override
+  String get notFoundError => 'The requested resource was not found.';
+
+  @override
+  String get invalidDataError => 'The provided data is invalid.';
+
+  @override
+  String get serverError =>
+      'Something went wrong on the server. Please try again later.';
+
+  @override
+  String get generalError => 'Something went wrong. Please try again.';
+
+  @override
+  String get platformError => 'A platform error occurred. Please try again.';
 }

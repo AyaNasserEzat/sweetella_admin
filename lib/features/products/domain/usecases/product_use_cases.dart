@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:sweetella_admin/core/error/failure.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product_category.dart';
 import 'package:sweetella_admin/features/products/domain/repositories/product_repository.dart';
@@ -7,7 +9,7 @@ class GetProducts {
 
   final ProductRepository _repository;
 
-  Future<List<Product>> call() => _repository.getProducts();
+  Future<Either<Failure, List<Product>>> call() => _repository.getProducts();
 }
 
 class GetProductCategories {
@@ -23,7 +25,8 @@ class AddProduct {
 
   final ProductRepository _repository;
 
-  Future<Product> call(Product product) => _repository.addProduct(product);
+  Future<Either<Failure, Product>> call(Product product) =>
+      _repository.addProduct(product);
 }
 
 class UpdateProduct {
@@ -31,7 +34,8 @@ class UpdateProduct {
 
   final ProductRepository _repository;
 
-  Future<void> call(Product product) => _repository.updateProduct(product);
+  Future<Either<Failure, void>> call(Product product) =>
+      _repository.updateProduct(product);
 }
 
 class DeleteProduct {
@@ -39,5 +43,6 @@ class DeleteProduct {
 
   final ProductRepository _repository;
 
-  Future<void> call(String id) => _repository.deleteProduct(id);
+  Future<Either<Failure, void>> call(String id) =>
+      _repository.deleteProduct(id);
 }

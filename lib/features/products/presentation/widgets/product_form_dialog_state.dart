@@ -35,7 +35,18 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
       compact: compact,
       dialogWidth: compact ? screenWidth * 0.9 : screenWidth * 0.75,
       attributesError: _attributesError,
-      onCategoryChanged: (value) => setState(() => _data.categoryId = value),
+      onCategoryChanged: (value) => setState(() {
+        _data.categoryId = value;
+        _data.categoryName = value == null
+            ? ''
+            : categories
+                  .firstWhere(
+                    (category) => category.id == value,
+                    orElse: () =>
+                        ProductCategory(id: value, name: value, imageUrl: ''),
+                  )
+                  .name;
+      }),
       onAddAttribute: _addAttribute,
       onRemoveAttribute: _removeAttribute,
       onAddOption: _addOption,

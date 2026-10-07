@@ -1,8 +1,9 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sweetella_admin/core/error/failure.dart';
 import 'package:sweetella_admin/features/products/data/models/product_model.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product_category.dart';
-import 'package:sweetella_admin/features/products/domain/errors/product_failure.dart';
 import 'package:sweetella_admin/features/products/domain/repositories/product_repository.dart';
 import 'package:sweetella_admin/features/products/domain/usecases/product_use_cases.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
@@ -19,6 +20,7 @@ void main() {
         expect(json.keys.toSet(), {
           'id',
           'categoryId',
+          'categoryName',
           'name',
           'description',
           'price',
@@ -65,7 +67,6 @@ void main() {
     ProductCubit createCubit() {
       return ProductCubit(
         getProducts: GetProducts(repository),
-        getCategories: GetProductCategories(repository),
         addProduct: AddProduct(repository),
         updateProduct: UpdateProduct(repository),
         deleteProduct: DeleteProduct(repository),
@@ -97,16 +98,14 @@ void main() {
     });
 
     test('load reports an error', () async {
-      repository.failure = const ProductFailure(
-        ProductFailureKind.permissionDenied,
-      );
+      repository.failure = const Failure(FailureKind.forbidden);
 
       await cubit.loadProducts();
 
       expect(cubit.state, isA<ProductLoadError>());
       expect(
         (cubit.state as ProductLoadError).failure,
-        ProductFailureKind.permissionDenied,
+        const Failure(FailureKind.forbidden),
       );
     });
 
@@ -130,7 +129,7 @@ void main() {
       expect(cubit.state, isA<ProductAddSuccess>());
       expect((cubit.state as ProductAddSuccess).products, hasLength(2));
 
-      repository.failure = const ProductFailure(ProductFailureKind.unknown);
+      repository.failure = const Failure(FailureKind.unknown);
       expect(await cubit.add(added), isFalse);
       expect(cubit.state, isA<ProductAddError>());
       expect((cubit.state as ProductAddError).products, hasLength(2));
@@ -146,7 +145,7 @@ void main() {
       expect(updatedProducts, hasLength(1));
       expect(updatedProducts.single.name, 'Updated product');
 
-      repository.failure = const ProductFailure(ProductFailureKind.unknown);
+      repository.failure = const Failure(FailureKind.unknown);
       expect(await cubit.update(updated), isFalse);
       expect(cubit.state, isA<ProductUpdateError>());
       expect((cubit.state as ProductUpdateError).products, hasLength(1));
@@ -161,7 +160,7 @@ void main() {
 
       repository.products.add(_product());
       await cubit.loadProducts();
-      repository.failure = const ProductFailure(ProductFailureKind.unknown);
+      repository.failure = const Failure(FailureKind.unknown);
       expect(await cubit.delete('product-id'), isFalse);
       expect(cubit.state, isA<ProductDeleteError>());
       expect((cubit.state as ProductDeleteError).products, hasLength(1));
@@ -178,6 +177,7 @@ Product _product({
     id: id,
     name: name,
     categoryId: 'category-id',
+    categoryName: 'Category',
     description: 'Product description',
     price: 125,
     salePrice: 100,
@@ -199,47 +199,42 @@ class _FakeProductRepository implements ProductRepository {
   _FakeProductRepository({required this.products});
 
   final List<Product> products;
-  ProductFailure? failure;
-
-  void _throwIfFailed() {
-    final failure = this.failure;
-    if (failure != null) throw failure;
-  }
+  Failure? failure;
 
   @override
-  Future<List<Product>> getProducts() async {
-    _throwIfFailed();
-    return List.of(products);
+  Future<Either<Failure, List<Product>>> getProducts() async {
+    return failure == null ? Right(List.of(products)) : Left(failure!);
   }
 
   @override
   Future<List<ProductCategory>> getCategories() async {
-    _throwIfFailed();
     return const [
       ProductCategory(id: 'category-id', name: 'Category', imageUrl: ''),
     ];
   }
 
   @override
-  Future<Product> addProduct(Product product) async {
-    _throwIfFailed();
+  Future<Either<Failure, Product>> addProduct(Product product) async {
+    if (failure != null) return Left(failure!);
     final savedProduct = product.id.isEmpty
         ? product.copyWith(id: 'created-id')
         : product;
     products.add(savedProduct);
-    return savedProduct;
+    return Right(savedProduct);
   }
 
   @override
-  Future<void> updateProduct(Product product) async {
-    _throwIfFailed();
+  Future<Either<Failure, void>> updateProduct(Product product) async {
+    if (failure != null) return Left(failure!);
     final index = products.indexWhere((item) => item.id == product.id);
     if (index >= 0) products[index] = product;
+    return const Right(null);
   }
 
   @override
-  Future<void> deleteProduct(String id) async {
-    _throwIfFailed();
+  Future<Either<Failure, void>> deleteProduct(String id) async {
+    if (failure != null) return Left(failure!);
     products.removeWhere((product) => product.id == id);
+    return const Right(null);
   }
 }

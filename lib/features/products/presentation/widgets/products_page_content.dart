@@ -43,15 +43,12 @@ class ProductsPageContent extends StatelessWidget {
 
   Future<void> _openForm(BuildContext context, {Product? product}) async {
     final cubit = context.read<ProductCubit>();
-    final data = cubit.state is ProductDataState
-        ? cubit.state as ProductDataState
-        : null;
     await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (_) => ProductFormDialog(
         product: product,
-        categories: data?.categories ?? const <ProductCategory>[],
+        categories: const <ProductCategory>[],
         onSave: product == null ? cubit.add : cubit.update,
       ),
     );

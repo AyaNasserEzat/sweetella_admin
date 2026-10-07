@@ -21,14 +21,12 @@ void setupServiceLocator() {
     () => ProductRepositoryImpl(sl<ProductRemoteDataSource>()),
   );
   sl.registerLazySingleton(() => GetProducts(sl<ProductRepository>()));
-  sl.registerLazySingleton(() => GetProductCategories(sl<ProductRepository>()));
   sl.registerLazySingleton(() => AddProduct(sl<ProductRepository>()));
   sl.registerLazySingleton(() => UpdateProduct(sl<ProductRepository>()));
   sl.registerLazySingleton(() => DeleteProduct(sl<ProductRepository>()));
   sl.registerFactory(
     () => ProductCubit(
       getProducts: sl<GetProducts>(),
-      getCategories: sl<GetProductCategories>(),
       addProduct: sl<AddProduct>(),
       updateProduct: sl<UpdateProduct>(),
       deleteProduct: sl<DeleteProduct>(),

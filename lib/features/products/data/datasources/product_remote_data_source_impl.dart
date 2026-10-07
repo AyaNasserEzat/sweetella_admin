@@ -17,11 +17,9 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       _firebaseServices.firestore.collection(productsCollection);
 
   @override
-  Future<List<ProductModel>> getProducts() {
-    return _guard(() async {
-      final snapshot = await _products.get();
-      return snapshot.docs.map(ProductModel.fromSnapshot).toList();
-    });
+  Future<List<ProductModel>> getProducts() async {
+    final snapshot = await _products.get();
+    return snapshot.docs.map(ProductModel.fromSnapshot).toList();
   }
 
   @override
@@ -42,6 +40,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         id: document.id,
         name: product.name,
         categoryId: product.categoryId,
+        categoryName: product.categoryName,
         description: product.description,
         price: product.price,
         salePrice: product.salePrice,

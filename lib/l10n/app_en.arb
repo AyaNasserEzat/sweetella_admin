@@ -62,5 +62,13 @@
       "name": { "type": "String" }
     }
   },
-  "currencyCode": "EGP"
+  "currencyCode": "EGP",
+  "networkError": "Please check your internet connection and try again.",
+  "unauthorizedError": "You are not authorized. Please sign in again.",
+  "forbiddenError": "You don't have permission to perform this action.",
+  "notFoundError": "The requested resource was not found.",
+  "invalidDataError": "The provided data is invalid.",
+  "serverError": "Something went wrong on the server. Please try again later.",
+  "generalError": "Something went wrong. Please try again.",
+  "platformError": "A platform error occurred. Please try again."
 }

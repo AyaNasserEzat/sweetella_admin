@@ -18,6 +18,7 @@ class ProductFormData {
       ),
       imageUrlController = TextEditingController(text: product?.imageUrl ?? ''),
       categoryId = product?.categoryId,
+      categoryName = product?.categoryName ?? '',
       attributes =
           product?.attributes
               .map(ProductAttributeFormData.fromEntity)
@@ -30,6 +31,7 @@ class ProductFormData {
   final TextEditingController salePriceController;
   final TextEditingController imageUrlController;
   String? categoryId;
+  String categoryName;
   final List<ProductAttributeFormData> attributes;
 
   Product toProduct(String id) {
@@ -37,6 +39,7 @@ class ProductFormData {
       id: id,
       name: nameController.text.trim(),
       categoryId: categoryId!,
+      categoryName: categoryName,
       description: descriptionController.text.trim(),
       price: int.parse(priceController.text),
       salePrice: int.tryParse(salePriceController.text) ?? 0,

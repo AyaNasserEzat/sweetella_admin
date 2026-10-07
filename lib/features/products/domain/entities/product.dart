@@ -3,6 +3,7 @@ class Product {
     required this.id,
     required this.name,
     required this.categoryId,
+    required this.categoryName,
     required this.description,
     required this.price,
     required this.salePrice,
@@ -13,6 +14,7 @@ class Product {
   final String id;
   final String name;
   final String categoryId;
+  final String categoryName;
   final String description;
   final int price;
   final int salePrice;
@@ -30,6 +32,7 @@ class Product {
       id: id ?? this.id,
       name: name,
       categoryId: categoryId,
+      categoryName: categoryName,
       description: description,
       price: price,
       salePrice: salePrice,

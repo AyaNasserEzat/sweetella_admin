@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
-import 'package:sweetella_admin/core/extension/localization_extension.dart';
 import 'package:sweetella_admin/core/layout/breakpoints.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
-import 'package:sweetella_admin/features/products/domain/entities/product_category.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/product_list_item.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/products_table_header.dart';
 
 class ProductsList extends StatelessWidget {
   const ProductsList({
     required this.products,
-    required this.categories,
     required this.onEdit,
     required this.onDelete,
     super.key,
   });
 
   final List<Product> products;
-  final List<ProductCategory> categories;
   final ValueChanged<Product> onEdit;
   final ValueChanged<Product> onDelete;
 
@@ -44,14 +40,10 @@ class ProductsList extends StatelessWidget {
                     SizedBox(height: tokens.space.sm),
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  final category = categories
-                      .where((item) => item.id == product.categoryId)
-                      .firstOrNull;
                   return ProductListItem(
                     key: ValueKey(product.id),
                     product: product,
-                    categoryName:
-                        category?.name ?? context.l10n.unknownCategory,
+                    categoryName: product.categoryName,
                     compact: compact,
                     onEdit: () => onEdit(product),
                     onDelete: () => onDelete(product),

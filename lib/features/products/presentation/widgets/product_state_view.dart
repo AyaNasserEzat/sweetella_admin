@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sweetella_admin/core/extension/localization_extension.dart';
+import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
-import 'package:sweetella_admin/features/products/domain/errors/product_failure.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_state.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/product_empty_state.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/product_load_error_view.dart';
@@ -27,34 +26,35 @@ class ProductStateView extends StatelessWidget {
       ProductInitial() ||
       ProductLoading() => const Center(child: CircularProgressIndicator()),
       ProductLoadError(:final failure) => ProductLoadErrorView(
-        message: _failureMessage(
-          context,
-          failure,
-          context.l10n.productsLoadError,
-        ),
+        message: failure.message(context),
         onRetry: onRetry,
       ),
-      ProductDataState(:final products, :final categories) =>
+      ProductDataState(:final products) =>
         products.isEmpty
             ? const ProductEmptyState()
             : ProductsList(
                 products: products,
-                categories: categories,
                 onEdit: onEdit,
                 onDelete: onDelete,
               ),
+      // TODO: Handle this case.
+      ProductLoadSuccess(:final products) => ProductsList(
+        products: products,
+        onEdit: onEdit,
+        onDelete: onDelete,
+      ),
     };
   }
 
-  String _failureMessage(
-    BuildContext context,
-    ProductFailureKind failure,
-    String fallback,
-  ) {
-    return switch (failure) {
-      ProductFailureKind.permissionDenied => context.l10n.permissionDenied,
-      ProductFailureKind.unavailable => context.l10n.networkError,
-      ProductFailureKind.invalidData || ProductFailureKind.unknown => fallback,
-    };
-  }
+  // String _failureMessage(
+  //   BuildContext context,
+  //   ProductFailureKind failure,
+  //   String fallback,
+  // ) {
+  //   return switch (failure) {
+  //     ProductFailureKind.permissionDenied => context.l10n.permissionDenied,
+  //     ProductFailureKind.unavailable => context.l10n.networkError,
+  //     ProductFailureKind.invalidData || ProductFailureKind.unknown => fallback,
+  //   };
+  // }
 }
