@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/extension/localization_extension.dart';
 
-enum DashboardDestination { dashboard, products }
+enum DashboardDestination { dashboard, products, categories }
 
 class DashboardSidebar extends StatelessWidget {
   const DashboardSidebar({
@@ -31,7 +31,11 @@ class DashboardSidebar extends StatelessWidget {
         icon: Icons.shopping_bag_rounded,
         destination: DashboardDestination.products,
       ),
-      _NavItemData(label: 'Categories', icon: Icons.category_rounded),
+      _NavItemData(
+        label: 'Categories',
+        icon: Icons.category_rounded,
+        destination: DashboardDestination.categories,
+      ),
       _NavItemData(label: 'Orders', icon: Icons.receipt_long_rounded),
       _NavItemData(label: 'Customers', icon: Icons.group_rounded),
       _NavItemData(label: 'Payments', icon: Icons.payments_rounded),

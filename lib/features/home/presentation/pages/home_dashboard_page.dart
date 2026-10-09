@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/layout/breakpoints.dart';
+import 'package:sweetella_admin/features/categories/presentation/pages/categories_page.dart';
 import 'package:sweetella_admin/features/products/presentation/pages/products_page.dart';
 import '../widgets/dashboard_best_selling_products.dart';
 import '../widgets/dashboard_header.dart';
@@ -63,6 +64,10 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
   Widget _selectedContent(AppTokens tokens) {
     if (_selectedDestination == DashboardDestination.products) {
       return const ProductsPage();
+    }
+
+    if (_selectedDestination == DashboardDestination.categories) {
+      return const CategoriesPage();
     }
 
     return SingleChildScrollView(
