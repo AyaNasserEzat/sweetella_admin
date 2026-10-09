@@ -3,6 +3,7 @@ import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/layout/breakpoints.dart';
 import 'package:sweetella_admin/features/categories/presentation/pages/categories_page.dart';
 import 'package:sweetella_admin/features/products/presentation/pages/products_page.dart';
+import '../widgets/sidebar_item_data.dart';
 import '../widgets/dashboard_best_selling_products.dart';
 import '../widgets/dashboard_header.dart';
 import '../widgets/dashboard_recent_orders.dart';
@@ -23,59 +24,68 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
+    final isCompact =
+        AppBreakpoints.fromWidth(MediaQuery.sizeOf(context).width) ==
+        AppBreakpoint.compact;
+
+    final sidebar = DashboardSidebar(
+      selectedDestination: _selectedDestination,
+      onDestinationSelected: (destination) {
+        setState(() => _selectedDestination = destination);
+        if (isCompact) {
+          Navigator.of(context).pop();
+        }
+      },
+    );
+
+    if (isCompact) {
+      return Scaffold(
+        backgroundColor: tokens.color.background,
+        appBar: AppBar(
+          backgroundColor: tokens.color.surface,
+          title: Text(_pageTitle()),
+        ),
+        drawer: Drawer(child: sidebar),
+        body: _selectedContent(tokens),
+      );
+    }
 
     return Scaffold(
       backgroundColor: tokens.color.background,
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final breakpoint = AppBreakpoints.fromWidth(constraints.maxWidth);
-            final compact = breakpoint == AppBreakpoint.compact;
-            final sidebar = DashboardSidebar(
-              tokens: tokens,
-              compact: compact,
-              selectedDestination: _selectedDestination,
-              onDestinationSelected: (destination) {
-                setState(() => _selectedDestination = destination);
-              },
-            );
-
-            if (compact) {
-              return Column(
-                children: [
-                  sidebar,
-                  Expanded(child: _selectedContent(tokens)),
-                ],
-              );
-            }
-
-            return Row(
-              children: [
-                sidebar,
-                Expanded(child: _selectedContent(tokens)),
-              ],
-            );
-          },
-        ),
+      body: Row(
+        children: [
+          SizedBox(width: tokens.size.sidebarWidth, child: sidebar),
+          Expanded(child: _selectedContent(tokens)),
+        ],
       ),
     );
   }
 
+  String _pageTitle() {
+    switch (_selectedDestination) {
+      case DashboardDestination.dashboard:
+        return 'Dashboard';
+      case DashboardDestination.products:
+        return 'Products';
+      case DashboardDestination.categories:
+        return 'Categories';
+    }
+  }
+
   Widget _selectedContent(AppTokens tokens) {
-    if (_selectedDestination == DashboardDestination.products) {
-      return const ProductsPage();
+    switch (_selectedDestination) {
+      case DashboardDestination.products:
+        return const ProductsPage();
+      case DashboardDestination.categories:
+        return const CategoriesPage();
+      case DashboardDestination.dashboard:
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(tokens.space.xl),
+            child: _DashboardMainContent(tokens: tokens),
+          ),
+        );
     }
-
-    if (_selectedDestination == DashboardDestination.categories) {
-      return const CategoriesPage();
-    }
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(tokens.space.xl),
-        child: _DashboardMainContent(tokens: tokens),
-      ),
-    );
   }
 }
 
