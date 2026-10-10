@@ -1,79 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
-import 'package:sweetella_admin/core/utils/app_colors.dart';
-import 'package:sweetella_admin/core/utils/app_text_styles.dart';
 
 class AppTheme {
   const AppTheme._();
 
-  static ThemeData get light {
+  static ThemeData get light => _buildTheme(AppTokens.light, Brightness.light);
+
+  static ThemeData get dark => _buildTheme(AppTokens.dark, Brightness.dark);
+
+  static ThemeData _buildTheme(AppTokens tokens, Brightness brightness) {
+    final colors = tokens.color;
+
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: AppTokens.light.color.background,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppTokens.light.color.brand,
-        brightness: Brightness.light,
+      brightness: brightness,
+      scaffoldBackgroundColor: colors.background,
+
+      colorScheme: ColorScheme(
+        brightness: brightness,
+        primary: colors.brand,
+        onPrimary: Colors.white,
+        secondary: colors.brandSoft,
+        onSecondary: colors.textPrimary,
+        error: colors.danger,
+        onError: Colors.white,
+        surface: colors.surface,
+        onSurface: colors.textPrimary,
       ),
-      extensions: const [AppTokens.light],
+
+      extensions: <ThemeExtension<dynamic>>[tokens],
+
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.white,
+        backgroundColor: colors.surface,
+        foregroundColor: colors.textPrimary,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.text16BoldBlack,
-        actionsIconTheme: IconThemeData(color: AppColors.black),
+        elevation: 0,
+        titleTextStyle: tokens.text.title,
+        iconTheme: IconThemeData(color: colors.icon),
       ),
+
       inputDecorationTheme: InputDecorationTheme(
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-        fillColor: Colors.grey.shade100,
+        hintStyle: tokens.text.bodySmall.copyWith(color: colors.textSecondary),
+        fillColor: colors.surfaceAlt,
         filled: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: tokens.space.lg,
+          vertical: tokens.space.md,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(tokens.radius.md),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(tokens.radius.md),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: AppColors.primaryColor,
-            width: 1.5,
-          ),
+          borderRadius: BorderRadius.circular(tokens.radius.md),
+          borderSide: BorderSide(color: colors.brand, width: 1.5),
         ),
       ),
+
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor,
+          backgroundColor: colors.brand,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: AppColors.primaryColor,
-          disabledForegroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 48),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          disabledBackgroundColor: colors.surfaceAlt,
+          disabledForegroundColor: colors.textSecondary,
+          minimumSize: Size(double.infinity, tokens.size.listRowHeight),
+          padding: EdgeInsets.symmetric(
+            horizontal: tokens.space.xl,
+            vertical: tokens.space.md,
+          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(tokens.radius.md),
           ),
           elevation: 0,
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: tokens.text.button,
         ),
       ),
-    );
-  }
 
-  static ThemeData get dark {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: AppTokens.dark.color.background,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppTokens.dark.color.brand,
-        brightness: Brightness.dark,
-      ),
-      extensions: const [AppTokens.dark],
+      dividerTheme: DividerThemeData(color: colors.border, thickness: 1),
     );
   }
 }

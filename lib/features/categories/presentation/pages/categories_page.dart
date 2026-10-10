@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sweetella_admin/core/di/service_locator.dart';
+import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/core/utils/app_colors.dart';
+import 'package:sweetella_admin/core/widgets/custom_overlay_message.dart';
 import 'package:sweetella_admin/features/categories/domain/entities/category.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_state.dart';
@@ -48,7 +50,43 @@ class _CategoriesView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Expanded(
-              child: BlocBuilder<CategoryCubit, CategoryState>(
+              child: BlocConsumer<CategoryCubit, CategoryState>(
+                listener: (context, state) {
+                  if (state is CategoryDeleteError) {
+                    showOverlayMessage(
+                      context: context,
+                      text: state.failure.message(context),
+                      isError: true,
+                    );
+                  }
+                  if (state is CategoryUpdateError) {
+                    showOverlayMessage(
+                      context: context,
+                      text: state.failure.message(context),
+                      isError: true,
+                    );
+                  }
+                  if (state is CategoryDeleteSuccess) {
+                    showOverlayMessage(
+                      context: context,
+                      text: "category deleted sucessfully",
+                    );
+                  }
+                  if (state is CategoryAddSuccess) {
+                    Navigator.of(context).pop();
+                    showOverlayMessage(
+                      context: context,
+                      text: "category added successfully",
+                    );
+                  }
+                  if (state is CategoryUpdateSuccess) {
+                    Navigator.of(context).pop();
+                    showOverlayMessage(
+                      context: context,
+                      text: "category updated successfully",
+                    );
+                  }
+                },
                 builder: (context, state) {
                   if (state is CategoryLoading) {
                     return const Center(child: CircularProgressIndicator());

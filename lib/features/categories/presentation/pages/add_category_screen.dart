@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
+import 'package:sweetella_admin/core/utils/app_colors.dart';
+import 'package:sweetella_admin/core/widgets/custom_overlay_message.dart';
 import 'package:sweetella_admin/features/categories/domain/entities/category.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_state.dart';
-import 'package:sweetella_admin/features/categories/presentation/widgets/custom_button.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/custom_text_field.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/image_upload_box.dart';
 
@@ -74,16 +75,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     if (!mounted) return;
 
     setState(() => _isSaving = false);
-
-    final state = cubit.state;
-    if (state is CategoryAddSuccess || state is CategoryUpdateSuccess) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("edit or add")));
-
-      return;
-    }
   }
 
   @override
@@ -91,8 +82,15 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     final title = widget.category == null ? 'Add Category' : 'Edit Category';
 
     return Scaffold(
-      // backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(Icons.arrow_back_ios_new),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -145,25 +143,46 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     BlocListener<CategoryCubit, CategoryState>(
                       listener: (context, state) {
                         if (state is CategoryUpdateError) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.failure.message(context)),
-                            ),
+                          showOverlayMessage(
+                            context: context,
+                            text: state.failure.message(context),
+                            isError: true,
+                          );
+                        }
+                        if (state is CategoryAddError) {
+                          showOverlayMessage(
+                            context: context,
+                            text: state.failure.message(context),
+                            isError: true,
                           );
                         }
                       },
                       child: Expanded(
-                        child: CustomButton(
-                          text: _isSaving ? 'Saving...' : title,
+                        child: ElevatedButton(
                           onPressed: _isSaving ? () {} : _saveCategory,
+                          child: Text(_isSaving ? 'Saving...' : title),
                         ),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: CustomButton(
-                        text: 'Cancel',
-
+                      child: ElevatedButton(
+                        child: Text("cancle"),
+                        style: Theme.of(context).elevatedButtonTheme.style
+                            ?.copyWith(
+                              backgroundColor: WidgetStatePropertyAll(
+                                AppColors.white,
+                              ),
+                              foregroundColor: const WidgetStatePropertyAll(
+                                AppColors.primaryColor,
+                              ),
+                              side: WidgetStatePropertyAll(
+                                BorderSide(
+                                  color: AppColors.primaryColor,
+                                  width: 1.5,
+                                ),
+                              ),
+                            ),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                     ),
