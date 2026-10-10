@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/di/service_locator.dart';
 import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
-import 'package:sweetella_admin/core/utils/app_colors.dart';
 import 'package:sweetella_admin/core/widgets/custom_overlay_message.dart';
 import 'package:sweetella_admin/features/categories/domain/entities/category.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
@@ -27,28 +27,44 @@ class _CategoriesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    final colors = tokens.color;
+
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(tokens.space.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Categories',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: tokens.text.title.copyWith(
+                      color: colors.textPrimary,
+                    ),
                   ),
                 ),
                 FilledButton.icon(
                   onPressed: () => _openForm(context),
                   icon: const Icon(Icons.add),
                   label: const Text('Add category'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.brand,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: tokens.space.lg,
+                      vertical: tokens.space.md,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(tokens.radius.md),
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: tokens.space.xl),
             Expanded(
               child: BlocConsumer<CategoryCubit, CategoryState>(
                 listener: (context, state) {
@@ -58,38 +74,36 @@ class _CategoriesView extends StatelessWidget {
                       text: state.failure.message(context),
                       isError: true,
                     );
-                  }
-                  if (state is CategoryUpdateError) {
+                  } else if (state is CategoryUpdateError) {
                     showOverlayMessage(
                       context: context,
                       text: state.failure.message(context),
                       isError: true,
                     );
-                  }
-                  if (state is CategoryDeleteSuccess) {
+                  } else if (state is CategoryDeleteSuccess) {
                     showOverlayMessage(
                       context: context,
-                      text: "category deleted sucessfully",
+                      text: 'Category deleted successfully',
                     );
-                  }
-                  if (state is CategoryAddSuccess) {
+                  } else if (state is CategoryAddSuccess) {
                     Navigator.of(context).pop();
                     showOverlayMessage(
                       context: context,
-                      text: "category added successfully",
+                      text: 'Category added successfully',
                     );
-                  }
-                  if (state is CategoryUpdateSuccess) {
+                  } else if (state is CategoryUpdateSuccess) {
                     Navigator.of(context).pop();
                     showOverlayMessage(
                       context: context,
-                      text: "category updated successfully",
+                      text: 'Category updated successfully',
                     );
                   }
                 },
                 builder: (context, state) {
                   if (state is CategoryLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: CircularProgressIndicator(color: colors.brand),
+                    );
                   }
 
                   final categories = switch (state) {
@@ -106,13 +120,23 @@ class _CategoriesView extends StatelessWidget {
                   };
 
                   if (state is CategoryLoadError && categories.isEmpty) {
-                    return const Center(
-                      child: Text('Failed to load categories'),
+                    return Center(
+                      child: Text(
+                        'Failed to load categories',
+                        style: tokens.text.body.copyWith(color: colors.danger),
+                      ),
                     );
                   }
 
                   if (categories.isEmpty) {
-                    return const Center(child: Text('No categories found'));
+                    return Center(
+                      child: Text(
+                        'No categories found',
+                        style: tokens.text.body.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    );
                   }
 
                   return CategoriesTable(
@@ -142,19 +166,36 @@ class _CategoriesView extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, Category category) async {
+    final tokens = context.tokens;
+    final colors = tokens.color;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.white,
-        title: const Text('Delete category'),
-        content: Text('Delete "${category.categoryName}"?'),
+        backgroundColor: colors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(tokens.radius.lg),
+        ),
+        title: Text(
+          'Delete category',
+          style: tokens.text.titleSmall.copyWith(color: colors.textPrimary),
+        ),
+        content: Text(
+          'Delete "${category.categoryName}"?',
+          style: tokens.text.body.copyWith(color: colors.textSecondary),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
+            style: TextButton.styleFrom(foregroundColor: colors.textSecondary),
             child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: colors.danger,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Delete'),
           ),
         ],

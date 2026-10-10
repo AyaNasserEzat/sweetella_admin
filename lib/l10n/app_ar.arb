@@ -1,5 +1,6 @@
 {
   "@@locale": "ar",
+  "darkMode": "الوضع الداكن",
   "products": "المنتجات",
   "addProduct": "إضافة منتج",
   "editProduct": "تعديل المنتج",

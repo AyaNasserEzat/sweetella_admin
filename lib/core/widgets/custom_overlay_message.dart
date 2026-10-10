@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/utils/app_colors.dart';
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 
@@ -42,13 +43,7 @@ void showOverlayMessage({
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(
-                        text,
-                        style: const TextStyle(
-                          color: AppColors.black,
-                          fontSize: 14,
-                        ),
-                      ),
+                      child: Text(text, style: context.tokens.text.body),
                     ),
                   ],
                 ),

@@ -30,6 +30,7 @@ class AppTheme {
 
       extensions: <ThemeExtension<dynamic>>[tokens],
 
+      // iconTheme: IconThemeData(color: tokens.color.icon),
       appBarTheme: AppBarTheme(
         backgroundColor: colors.surface,
         foregroundColor: colors.textPrimary,

@@ -17,22 +17,25 @@ class CategoriesTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
+    final colors = tokens.color;
+
+    final borderSide = BorderSide(color: colors.border, width: 1);
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
-          dataRowMinHeight: 68,
-          dataRowMaxHeight: 68,
-          headingRowHeight: 56,
-
+          dataRowMinHeight: tokens.size.listRowHeight + tokens.space.md,
+          dataRowMaxHeight: tokens.size.listRowHeight + tokens.space.md,
+          headingRowHeight: tokens.size.listRowHeight + tokens.space.xs,
+          headingRowColor: WidgetStatePropertyAll(colors.surfaceAlt),
           border: TableBorder(
-            horizontalInside: BorderSide(color: Colors.grey.shade300, width: 1),
-            top: BorderSide(color: Colors.grey.shade300),
-            bottom: BorderSide(color: Colors.grey.shade300),
-            left: BorderSide(color: Colors.grey.shade300),
-            right: BorderSide(color: Colors.grey.shade300),
+            horizontalInside: borderSide,
+            top: borderSide,
+            bottom: borderSide,
+            left: borderSide,
+            right: borderSide,
           ),
           columns: [
             DataColumn(label: Text('Image', style: tokens.text.titleSmall)),
@@ -50,24 +53,38 @@ class CategoriesTable extends StatelessWidget {
 
                 return DataRow(
                   color: WidgetStatePropertyAll(
-                    index.isEven ? Colors.white : Colors.grey.shade100,
+                    index.isEven ? colors.surface : colors.surfaceAlt,
                   ),
                   cells: [
                     DataCell(
                       SizedBox(
-                        width: 52,
-                        height: 52,
+                        width: tokens.size.profileAvatar + tokens.space.sm,
+                        height: tokens.size.profileAvatar + tokens.space.sm,
                         child: category.image.isEmpty
-                            ? const Icon(Icons.category)
-                            : Image.network(
-                                category.image,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(Icons.broken_image),
+                            ? Icon(
+                                Icons.category,
+                                color: colors.icon,
+                                size: tokens.size.icon + tokens.space.xs,
+                              )
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  tokens.radius.sm,
+                                ),
+                                child: Image.network(
+                                  category.image,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(
+                                        Icons.broken_image,
+                                        color: colors.icon,
+                                      ),
+                                ),
                               ),
                       ),
                     ),
-                    DataCell(Text(category.categoryName)),
+                    DataCell(
+                      Text(category.categoryName, style: tokens.text.body),
+                    ),
                     DataCell(
                       Row(
                         mainAxisSize: MainAxisSize.min,
@@ -75,12 +92,20 @@ class CategoriesTable extends StatelessWidget {
                           IconButton(
                             tooltip: 'Edit',
                             onPressed: () => onEdit(category),
-                            icon: const Icon(Icons.edit_outlined),
+                            icon: Icon(
+                              Icons.edit_outlined,
+                              color: colors.icon,
+                              size: tokens.size.icon,
+                            ),
                           ),
                           IconButton(
                             tooltip: 'Delete',
                             onPressed: () => onDelete(category),
-                            icon: const Icon(Icons.delete_outline),
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: colors.danger,
+                              size: tokens.size.icon,
+                            ),
                           ),
                         ],
                       ),

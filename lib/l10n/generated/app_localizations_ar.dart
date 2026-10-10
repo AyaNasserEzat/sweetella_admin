@@ -9,6 +9,9 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get darkMode => 'الوضع الداكن';
+
+  @override
   String get products => 'المنتجات';
 
   @override

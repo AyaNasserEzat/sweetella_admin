@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sweetella_admin/core/design/app_tokens.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -26,11 +27,7 @@ class CustomTextField extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-            ),
+            style: context.tokens.text.label,
             children: [
               if (isRequired)
                 const TextSpan(

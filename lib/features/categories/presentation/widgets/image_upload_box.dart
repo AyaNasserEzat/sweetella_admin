@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sweetella_admin/core/utils/app_colors.dart';
+import 'package:sweetella_admin/core/design/app_tokens.dart';
 
 class ImageUploadBox extends StatelessWidget {
   const ImageUploadBox({
@@ -18,84 +19,95 @@ class ImageUploadBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    final colors = tokens.color;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text(label, style: tokens.text.label),
+        SizedBox(height: tokens.space.sm),
         GestureDetector(
           onTap: onTap,
-          child: Container(
-            width: double.infinity,
-            height: 220,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFAFAFA),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.primaryColor, width: 1.5),
+          child: DottedBorder(
+            options: RoundedRectDottedBorderOptions(
+              color: colors.brand,
+              strokeWidth: 1.5,
+              dashPattern: const [6, 4],
+              radius: Radius.circular(tokens.radius.md),
             ),
-            child: imagePath == null || imagePath!.isEmpty
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFFF0EC),
-                          shape: BoxShape.circle,
+            child: Container(
+              width: double.infinity,
+              height: tokens.size.productImageHeight + 84,
+              decoration: BoxDecoration(
+                color: colors.surfaceAlt,
+                borderRadius: BorderRadius.circular(tokens.radius.md),
+              ),
+              child: imagePath == null || imagePath!.isEmpty
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(tokens.space.md),
+                          decoration: BoxDecoration(
+                            color: colors.brandSoft,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.cloud_upload_outlined,
+                            color: colors.brand,
+                            size: tokens.size.icon + 14,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.cloud_upload_outlined,
-                          color: AppColors.primaryColor,
-                          size: 32,
+                        SizedBox(height: tokens.space.md),
+                        RichText(
+                          text: TextSpan(
+                            style: tokens.text.bodySmall.copyWith(
+                              color: colors.textSecondary,
+                            ),
+                            children: [
+                              const TextSpan(
+                                text: 'Drop your images here or select ',
+                              ),
+                              TextSpan(
+                                text: 'click to browse',
+                                style: tokens.text.bodySmall.copyWith(
+                                  color: colors.brand,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 14),
-                      RichText(
-                        text: const TextSpan(
-                          text: 'Drop your images here or select ',
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
-                          children: [
-                            TextSpan(
-                              text: 'click to browse',
-                              style: TextStyle(
-                                color: AppColors.primaryColor,
-                                fontWeight: FontWeight.w600,
+                      ],
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(tokens.radius.md),
+                      child: kIsWeb
+                          ? Image.network(
+                              imagePath!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              errorBuilder: (_, __, ___) => Icon(
+                                Icons.broken_image_outlined,
+                                size: tokens.size.icon + 22,
+                                color: colors.icon,
+                              ),
+                            )
+                          : Image.file(
+                              File(imagePath!),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              errorBuilder: (_, __, ___) => Icon(
+                                Icons.broken_image_outlined,
+                                size: tokens.size.icon + 22,
+                                color: colors.icon,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                : ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: kIsWeb
-                        ? Image.network(
-                            imagePath!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(
-                                  Icons.broken_image_outlined,
-                                  size: 40,
-                                  color: AppColors.primaryColor,
-                                ),
-                          )
-                        : Image.file(
-                            File(imagePath!),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
-                  ),
+                    ),
+            ),
           ),
         ),
       ],

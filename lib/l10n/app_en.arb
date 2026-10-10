@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "darkMode": "Dark mode",
   "products": "Products",
   "addProduct": "Add product",
   "editProduct": "Edit product",

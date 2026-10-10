@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
-import 'package:sweetella_admin/core/utils/app_colors.dart';
 import 'package:sweetella_admin/core/widgets/custom_overlay_message.dart';
 import 'package:sweetella_admin/features/categories/domain/entities/category.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
@@ -103,15 +103,11 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                    color: context.tokens.color.surface,
+                    borderRadius: BorderRadius.circular(
+                      context.tokens.radius.md,
+                    ),
+                    boxShadow: context.tokens.shadow.low,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,23 +163,20 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        child: Text("cancle"),
                         style: Theme.of(context).elevatedButtonTheme.style
                             ?.copyWith(
                               backgroundColor: WidgetStatePropertyAll(
-                                AppColors.white,
+                                context.tokens.color.surface,
                               ),
-                              foregroundColor: const WidgetStatePropertyAll(
-                                AppColors.primaryColor,
+                              foregroundColor: WidgetStatePropertyAll(
+                                context.tokens.color.brand,
                               ),
                               side: WidgetStatePropertyAll(
-                                BorderSide(
-                                  color: AppColors.primaryColor,
-                                  width: 1.5,
-                                ),
+                                BorderSide(color: context.tokens.color.brand),
                               ),
                             ),
                         onPressed: () => Navigator.of(context).pop(),
+                        child: Text("cancle"),
                       ),
                     ),
                   ],
