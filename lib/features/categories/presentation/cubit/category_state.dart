@@ -62,3 +62,9 @@ final class CategoryDeleteError extends CategoryDataState {
 
   final Failure failure;
 }
+
+final class CategoryUploadError extends CategoryDataState {
+  const CategoryUploadError({required this.failure, required super.categories});
+
+  final Failure failure;
+}

@@ -4,13 +4,13 @@ import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product_category.dart';
 import 'package:sweetella_admin/features/products/domain/repositories/product_repository.dart';
 
-class GetProducts {
-  const GetProducts(this._repository);
+// class GetProducts {
+//   const GetProducts(this._repository);
 
-  final ProductRepository _repository;
+//   final ProductRepository _repository;
 
-  Future<Either<Failure, List<Product>>> call() => _repository.getProducts();
-}
+//   Future<Either<Failure, List<ProductEntity>>> call() => _repository.getProducts();
+// }
 
 class GetProductCategories {
   const GetProductCategories(this._repository);
@@ -20,29 +20,34 @@ class GetProductCategories {
   Future<List<ProductCategory>> call() => _repository.getCategories();
 }
 
-class AddProduct {
-  const AddProduct(this._repository);
+class GetProductsUseCase {
+  final ProductRepository repository;
+  GetProductsUseCase(this.repository);
 
-  final ProductRepository _repository;
-
-  Future<Either<Failure, Product>> call(Product product) =>
-      _repository.addProduct(product);
+  Future<Either<Failure, List<ProductEntity>>> call() =>
+      repository.getProducts();
 }
 
-class UpdateProduct {
-  const UpdateProduct(this._repository);
+class AddProductUseCase {
+  final ProductRepository repository;
+  AddProductUseCase(this.repository);
 
-  final ProductRepository _repository;
-
-  Future<Either<Failure, void>> call(Product product) =>
-      _repository.updateProduct(product);
+  Future<Either<Failure, void>> call(ProductEntity product) =>
+      repository.addProduct(product);
 }
 
-class DeleteProduct {
-  const DeleteProduct(this._repository);
+class UpdateProductUseCase {
+  final ProductRepository repository;
+  UpdateProductUseCase(this.repository);
 
-  final ProductRepository _repository;
+  Future<Either<Failure, void>> call(ProductEntity product) =>
+      repository.updateProduct(product);
+}
 
-  Future<Either<Failure, void>> call(String id) =>
-      _repository.deleteProduct(id);
+class DeleteProductUseCase {
+  final ProductRepository repository;
+  DeleteProductUseCase(this.repository);
+
+  Future<Either<Failure, void>> call(String productId) =>
+      repository.deleteProduct(productId);
 }

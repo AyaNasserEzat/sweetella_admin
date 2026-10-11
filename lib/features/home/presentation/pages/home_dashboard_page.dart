@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
+import 'package:sweetella_admin/core/di/service_locator.dart';
 import 'package:sweetella_admin/core/layout/breakpoints.dart';
 import 'package:sweetella_admin/features/categories/presentation/pages/categories_page.dart';
+import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
 import 'package:sweetella_admin/features/products/presentation/pages/products_page.dart';
+import 'package:sweetella_admin/features/products/presentation/widgets/add_product_page.dart';
 import '../widgets/sidebar_item_data.dart';
 import '../widgets/dashboard_best_selling_products.dart';
 import '../widgets/dashboard_header.dart';
@@ -67,6 +71,8 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
         return 'Dashboard';
       case DashboardDestination.products:
         return 'Products';
+      case DashboardDestination.addProduct:
+        return 'Add Product';
       case DashboardDestination.categories:
         return 'Categories';
     }
@@ -78,6 +84,11 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
         return const ProductsPage();
       case DashboardDestination.categories:
         return const CategoriesPage();
+      case DashboardDestination.addProduct:
+        return BlocProvider(
+          create: (context) => sl<ProductCubit>(),
+          child: const AddProductPage(),
+        );
       case DashboardDestination.dashboard:
         return SingleChildScrollView(
           child: Padding(

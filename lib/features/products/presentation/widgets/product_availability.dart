@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/extension/localization_extension.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
@@ -6,7 +7,7 @@ import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 class ProductAvailability extends StatelessWidget {
   const ProductAvailability({required this.product, super.key});
 
-  final Product product;
+  final ProductEntity product;
 
   @override
   Widget build(BuildContext context) {

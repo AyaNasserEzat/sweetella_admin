@@ -4,6 +4,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
+import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 
 class ImageUploadBox extends StatelessWidget {
   const ImageUploadBox({
@@ -21,11 +22,12 @@ class ImageUploadBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = context.tokens;
     final colors = tokens.color;
+    final imagePath = this.imagePath;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: tokens.text.label),
+        Text(label, style: tokens.text.titleSmall),
         SizedBox(height: tokens.space.sm),
         GestureDetector(
           onTap: onTap,
@@ -36,14 +38,10 @@ class ImageUploadBox extends StatelessWidget {
               dashPattern: const [6, 4],
               radius: Radius.circular(tokens.radius.md),
             ),
-            child: Container(
+            child: CustomShadowContanier(
               width: double.infinity,
               height: tokens.size.productImageHeight + 84,
-              decoration: BoxDecoration(
-                color: colors.surfaceAlt,
-                borderRadius: BorderRadius.circular(tokens.radius.md),
-              ),
-              child: imagePath == null || imagePath!.isEmpty
+              child: imagePath == null || imagePath.isEmpty
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -83,9 +81,12 @@ class ImageUploadBox extends StatelessWidget {
                     )
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(tokens.radius.md),
-                      child: kIsWeb
+                      child:
+                          kIsWeb ||
+                              imagePath.startsWith('http://') ||
+                              imagePath.startsWith('https://')
                           ? Image.network(
-                              imagePath!,
+                              imagePath,
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,
@@ -96,7 +97,7 @@ class ImageUploadBox extends StatelessWidget {
                               ),
                             )
                           : Image.file(
-                              File(imagePath!),
+                              File(imagePath),
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,

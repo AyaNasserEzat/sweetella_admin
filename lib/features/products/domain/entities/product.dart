@@ -1,5 +1,5 @@
-class Product {
-  const Product({
+class ProductEntity {
+  const ProductEntity({
     required this.id,
     required this.name,
     required this.categoryId,
@@ -10,6 +10,20 @@ class Product {
     required this.imageUrl,
     required this.attributes,
   });
+
+  factory ProductEntity.empty() {
+    return const ProductEntity(
+      id: '',
+      name: '.........',
+      categoryId: '',
+      categoryName: '.........',
+      description: '',
+      price: 100000,
+      salePrice: 100000,
+      imageUrl: '',
+      attributes: [],
+    );
+  }
 
   final String id;
   final String name;
@@ -27,8 +41,8 @@ class Product {
         (attribute) => attribute.options.any((option) => option.stock > 0),
       );
 
-  Product copyWith({String? id}) {
-    return Product(
+  ProductEntity copyWith({String? id}) {
+    return ProductEntity(
       id: id ?? this.id,
       name: name,
       categoryId: categoryId,

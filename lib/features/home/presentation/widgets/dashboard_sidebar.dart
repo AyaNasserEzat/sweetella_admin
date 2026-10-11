@@ -32,6 +32,12 @@ class DashboardSidebar extends StatelessWidget {
         destination: DashboardDestination.products,
       ),
       SidebarItemData(
+        label: context.l10n.addProduct,
+        icon: Icons.shopping_bag_rounded,
+        destination: DashboardDestination.addProduct,
+      ),
+
+      SidebarItemData(
         label: 'Categories',
         icon: Icons.category_rounded,
         destination: DashboardDestination.categories,

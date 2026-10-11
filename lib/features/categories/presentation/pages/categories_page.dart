@@ -9,6 +9,7 @@ import 'package:sweetella_admin/features/categories/presentation/cubit/category_
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_state.dart';
 import 'package:sweetella_admin/features/categories/presentation/pages/add_category_screen.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/categories_table.dart';
+import 'package:sweetella_admin/features/categories/presentation/widgets/category_table_skeleton.dart';
 
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({super.key});
@@ -101,9 +102,10 @@ class _CategoriesView extends StatelessWidget {
                 },
                 builder: (context, state) {
                   if (state is CategoryLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(color: colors.brand),
-                    );
+                    return CategoryTableSkeleton();
+                    // return Center(
+                    //   child: CircularProgressIndicator(color: colors.brand),
+                    // );
                   }
 
                   final categories = switch (state) {

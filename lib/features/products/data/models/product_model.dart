@@ -57,7 +57,7 @@ class ProductModel {
     );
   }
 
-  factory ProductModel.fromEntity(Product product) {
+  factory ProductModel.fromEntity(ProductEntity product) {
     return ProductModel(
       id: product.id,
       name: product.name,
@@ -81,8 +81,8 @@ class ProductModel {
   final String imageUrl;
   final List<ProductAttribute> attributes;
 
-  Product toEntity() {
-    return Product(
+  ProductEntity toEntity() {
+    return ProductEntity(
       id: id,
       name: name,
       categoryId: categoryId,

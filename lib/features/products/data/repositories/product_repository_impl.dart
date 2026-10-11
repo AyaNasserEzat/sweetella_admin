@@ -13,10 +13,10 @@ class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Either<Failure, List<Product>>> getProducts() async {
+  Future<Either<Failure, List<ProductEntity>>> getProducts() async {
     try {
       final models = await _remoteDataSource.getProducts();
-      List<Product> res = models
+      List<ProductEntity> res = models
           .map((model) => model.toEntity())
           .toList(growable: false);
       return Right(res);
@@ -32,7 +32,9 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, Product>> addProduct(Product product) async {
+  Future<Either<Failure, ProductEntity>> addProduct(
+    ProductEntity product,
+  ) async {
     try {
       final model = await _remoteDataSource.addProduct(
         ProductModel.fromEntity(product),
@@ -44,7 +46,7 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateProduct(Product product) async {
+  Future<Either<Failure, void>> updateProduct(ProductEntity product) async {
     try {
       await _remoteDataSource.updateProduct(ProductModel.fromEntity(product));
       return const Right(null);

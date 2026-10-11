@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sweetella_admin/features/categories/domain/entities/category.dart';
+import 'package:sweetella_admin/features/categories/domain/repositories/category_repository.dart';
 import 'package:sweetella_admin/features/categories/domain/usecases/add_category.dart';
 import 'package:sweetella_admin/features/categories/domain/usecases/delete_category.dart';
 import 'package:sweetella_admin/features/categories/domain/usecases/get_categories.dart';
@@ -12,16 +14,32 @@ class CategoryCubit extends Cubit<CategoryState> {
     required AddCategory addCategory,
     required UpdateCategory updateCategory,
     required DeleteCategory deleteCategory,
+    required CategoryRepository categoryRepository,
   }) : _getCategories = getCategories,
        _addCategory = addCategory,
        _updateCategory = updateCategory,
        _deleteCategory = deleteCategory,
+       _categoryRepository = categoryRepository,
        super(const CategoryInitial());
 
   final GetCategories _getCategories;
   final AddCategory _addCategory;
   final UpdateCategory _updateCategory;
   final DeleteCategory _deleteCategory;
+  final CategoryRepository _categoryRepository;
+
+  Future<String?> uploadCategoryImage(XFile image) async {
+    final result = await _categoryRepository.uploadCategoryImage(image);
+
+    if (isClosed) return null;
+
+    return result.fold((failure) {
+      emit(
+        CategoryUploadError(failure: failure, categories: _currentCategories),
+      );
+      return null;
+    }, (imageUrl) => imageUrl);
+  }
 
   Future<void> loadCategories() async {
     emit(const CategoryLoading());

@@ -1,5 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sweetella_admin/core/services/cloudinary_upload_service.dart';
 import 'package:sweetella_admin/core/services/firebase_service.dart';
+import 'package:sweetella_admin/core/services/image_compression_service.dart';
+import 'package:sweetella_admin/core/services/image_compression_service_impl.dart';
+import 'package:sweetella_admin/core/services/upload_service.dart';
 import 'package:sweetella_admin/features/categories/data/datasources/category_remote_data_source.dart';
 import 'package:sweetella_admin/features/categories/data/repositories/category_repository_impl.dart';
 import 'package:sweetella_admin/features/categories/domain/repositories/category_repository.dart';
@@ -18,6 +23,13 @@ import 'package:sweetella_admin/features/products/presentation/cubit/product_cub
 final sl = GetIt.instance;
 
 void setupServiceLocator() {
+  sl.registerLazySingleton<Dio>(Dio.new);
+  sl.registerLazySingleton<UploadService>(
+    () => CloudinaryUploadService(sl<Dio>()),
+  );
+  sl.registerLazySingleton<ImageCompressionService>(
+    ImageCompressionServiceImpl.new,
+  );
   sl.registerLazySingleton<FirebaseServices>(
     () => FirebaseServices.createDefault(),
   );
@@ -28,16 +40,16 @@ void setupServiceLocator() {
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImpl(sl<ProductRemoteDataSource>()),
   );
-  sl.registerLazySingleton(() => GetProducts(sl<ProductRepository>()));
-  sl.registerLazySingleton(() => AddProduct(sl<ProductRepository>()));
-  sl.registerLazySingleton(() => UpdateProduct(sl<ProductRepository>()));
-  sl.registerLazySingleton(() => DeleteProduct(sl<ProductRepository>()));
+  sl.registerLazySingleton(() => GetProductsUseCase(sl<ProductRepository>()));
+  sl.registerLazySingleton(() => AddProductUseCase(sl<ProductRepository>()));
+  sl.registerLazySingleton(() => UpdateProductUseCase(sl<ProductRepository>()));
+  sl.registerLazySingleton(() => DeleteProductUseCase(sl<ProductRepository>()));
   sl.registerFactory(
     () => ProductCubit(
-      getProducts: sl<GetProducts>(),
-      addProduct: sl<AddProduct>(),
-      updateProduct: sl<UpdateProduct>(),
-      deleteProduct: sl<DeleteProduct>(),
+      getProductsUseCase: sl<GetProductsUseCase>(),
+      addProductUseCase: sl<AddProductUseCase>(),
+      updateProductUseCase: sl<UpdateProductUseCase>(),
+      deleteProductUseCase: sl<DeleteProductUseCase>(),
     ),
   );
 
@@ -45,7 +57,11 @@ void setupServiceLocator() {
     () => CategoryRemoteDataSource(sl<FirebaseServices>()),
   );
   sl.registerLazySingleton<CategoryRepository>(
-    () => CategoryRepositoryImpl(sl<CategoryRemoteDataSource>()),
+    () => CategoryRepositoryImpl(
+      sl<CategoryRemoteDataSource>(),
+      sl<ImageCompressionService>(),
+      sl<UploadService>(),
+    ),
   );
   sl.registerLazySingleton(() => GetCategories(sl<CategoryRepository>()));
   sl.registerLazySingleton(() => AddCategory(sl<CategoryRepository>()));
@@ -57,6 +73,7 @@ void setupServiceLocator() {
       addCategory: sl<AddCategory>(),
       updateCategory: sl<UpdateCategory>(),
       deleteCategory: sl<DeleteCategory>(),
+      categoryRepository: sl<CategoryRepository>(),
     ),
   );
 }

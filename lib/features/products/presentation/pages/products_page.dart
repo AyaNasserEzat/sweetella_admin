@@ -10,7 +10,7 @@ class ProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<ProductCubit>()..loadProducts(),
+      create: (_) => sl<ProductCubit>()..fetchProducts(),
       child: const ProductsPageContent(),
     );
   }

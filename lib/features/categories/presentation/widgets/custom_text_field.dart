@@ -27,7 +27,7 @@ class CustomTextField extends StatelessWidget {
         RichText(
           text: TextSpan(
             text: label,
-            style: context.tokens.text.label,
+            style: context.tokens.text.titleSmall,
             children: [
               if (isRequired)
                 const TextSpan(
@@ -42,7 +42,10 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           validator: validator,
           maxLines: maxLines,
-          decoration: InputDecoration(hintText: hintText, label: Text(label)),
+          decoration: InputDecoration(
+            hintText: hintText,
+            label: Text(label, style: context.tokens.text.label),
+          ),
         ),
       ],
     );

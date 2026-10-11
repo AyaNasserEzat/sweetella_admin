@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/core/widgets/custom_overlay_message.dart';
+import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 import 'package:sweetella_admin/features/categories/domain/entities/category.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_state.dart';
@@ -25,6 +26,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
   final ImagePicker _picker = ImagePicker();
   bool _isSaving = false;
   String? _selectedImagePath;
+  XFile? _selectedImage;
 
   @override
   void initState() {
@@ -50,6 +52,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     }
 
     setState(() => _selectedImagePath = pickedFile.path);
+    _selectedImage = pickedFile;
   }
 
   Future<void> _saveCategory() async {
@@ -60,21 +63,32 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     setState(() => _isSaving = true);
 
     final cubit = context.read<CategoryCubit>();
-    final category = Category(
-      id: widget.category?.id ?? '',
-      categoryName: _nameController.text.trim(),
-      image: _selectedImagePath ?? '',
-    );
+    try {
+      var imageUrl = widget.category?.image ?? '';
+      final selectedImage = _selectedImage;
 
-    if (widget.category == null) {
-      await cubit.addCategory(category);
-    } else {
-      await cubit.updateCategory(category);
+      if (selectedImage != null) {
+        final uploadedImageUrl = await cubit.uploadCategoryImage(selectedImage);
+        if (!mounted || uploadedImageUrl == null) return;
+        imageUrl = uploadedImageUrl;
+      }
+
+      final category = Category(
+        id: widget.category?.id ?? '',
+        categoryName: _nameController.text.trim(),
+        image: imageUrl,
+      );
+
+      if (widget.category == null) {
+        await cubit.addCategory(category);
+      } else {
+        await cubit.updateCategory(category);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
-
-    if (!mounted) return;
-
-    setState(() => _isSaving = false);
   }
 
   @override
@@ -99,38 +113,32 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: context.tokens.color.surface,
-                    borderRadius: BorderRadius.circular(
-                      context.tokens.radius.md,
+                CustomShadowContanier(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomTextField(
+                          label: 'Category name',
+                          hintText: 'Category name',
+                          isRequired: true,
+                          controller: _nameController,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Category name is required';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        ImageUploadBox(
+                          label: 'Upload image',
+                          imagePath: _selectedImagePath,
+                          onTap: _pickImage,
+                        ),
+                      ],
                     ),
-                    boxShadow: context.tokens.shadow.low,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomTextField(
-                        label: 'Category name',
-                        hintText: 'Category name',
-                        isRequired: true,
-                        controller: _nameController,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Category name is required';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                      ImageUploadBox(
-                        label: 'Upload image',
-                        imagePath: _selectedImagePath,
-                        onTap: _pickImage,
-                      ),
-                    ],
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -138,6 +146,13 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                   children: [
                     BlocListener<CategoryCubit, CategoryState>(
                       listener: (context, state) {
+                        if (state is CategoryUploadError) {
+                          showOverlayMessage(
+                            context: context,
+                            text: state.failure.message(context),
+                            isError: true,
+                          );
+                        }
                         if (state is CategoryUpdateError) {
                           showOverlayMessage(
                             context: context,
@@ -146,6 +161,14 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                           );
                         }
                         if (state is CategoryAddError) {
+                          print("errrror");
+                          showOverlayMessage(
+                            context: context,
+                            text: state.failure.message(context),
+                            isError: true,
+                          );
+                        }
+                        if (state is CategoryUploadError) {
                           showOverlayMessage(
                             context: context,
                             text: state.failure.message(context),
