@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sweetella_admin/core/error/failure.dart';
 
@@ -7,6 +8,8 @@ class ExceptionHandler {
   const ExceptionHandler();
 
   static Failure handle(Object error) {
+    debugPrint('Error: $error');
+    debugPrint('Error Type: ${error.runtimeType}');
     if (error is FirebaseException) {
       return Failure(_mapFirebaseError(error.code));
     }

@@ -42,7 +42,11 @@ class DashboardSidebar extends StatelessWidget {
         icon: Icons.category_rounded,
         destination: DashboardDestination.categories,
       ),
-      SidebarItemData(label: 'Orders', icon: Icons.receipt_long_rounded),
+      SidebarItemData(
+        label: 'Orders',
+        icon: Icons.receipt_long_rounded,
+        destination: DashboardDestination.orders,
+      ),
       SidebarItemData(label: 'Customers', icon: Icons.group_rounded),
       SidebarItemData(label: 'Payments', icon: Icons.payments_rounded),
       SidebarItemData(

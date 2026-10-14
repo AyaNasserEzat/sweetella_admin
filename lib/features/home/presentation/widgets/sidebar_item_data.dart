@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
-enum DashboardDestination { dashboard, products, categories, addProduct }
+enum DashboardDestination {
+  dashboard,
+  products,
+  categories,
+  addProduct,
+  orders,
+}
 
 class SidebarItemData {
   const SidebarItemData({

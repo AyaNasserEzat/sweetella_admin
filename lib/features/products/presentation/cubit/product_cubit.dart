@@ -129,26 +129,36 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> addProduct(ProductEntity product) async {
+    emit(ProductLoading());
     final result = await addProductUseCase(product);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(ProductError(failure)),
-      (_) => fetchProducts(), // إعادة تحميل القائمة بعد الإضافة
+      (_) => emit(
+        ProductOperationSuccess('Product added successfully'),
+      ), // إعادة تحميل القائمة بعد الإضافة
     );
   }
 
   Future<void> updateProduct(ProductEntity product) async {
+    emit(ProductLoading());
     final result = await updateProductUseCase(product);
     result.fold(
       (failure) => emit(ProductError(failure)),
-      (_) => fetchProducts(), // إعادة تحميل القائمة بعد التعديل
+      (_) => emit(
+        ProductOperationSuccess('Product updated successfully'),
+      ), // إعادة تحميل القائمة بعد التعديل
     );
   }
 
   Future<void> deleteProduct(String productId) async {
+    emit(ProductLoading());
     final result = await deleteProductUseCase(productId);
     result.fold(
       (failure) => emit(ProductError(failure)),
-      (_) => fetchProducts(), // إعادة تحميل القائمة بعد الحذف
+      (_) => emit(
+        ProductOperationSuccess('Product deleted successfully'),
+      ), // إعادة تحميل القائمة بعد الحذف
     );
   }
 }

@@ -90,3 +90,8 @@ class ProductError extends ProductState {
   @override
   List<Object?> get props => [failure];
 }
+
+class ProductOperationSuccess extends ProductState {
+  final String message;
+  ProductOperationSuccess(this.message);
+}

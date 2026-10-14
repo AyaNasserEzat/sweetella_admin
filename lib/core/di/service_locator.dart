@@ -5,6 +5,11 @@ import 'package:sweetella_admin/core/services/firebase_service.dart';
 import 'package:sweetella_admin/core/services/image_compression_service.dart';
 import 'package:sweetella_admin/core/services/image_compression_service_impl.dart';
 import 'package:sweetella_admin/core/services/upload_service.dart';
+import 'package:sweetella_admin/core/storage/data/data_sources/cloudinary_remote_data_source.dart';
+import 'package:sweetella_admin/core/storage/data/data_sources/storage_remote_data_source.dart';
+import 'package:sweetella_admin/core/storage/data/repositories/cloudinary_image_storage_repository.dart';
+import 'package:sweetella_admin/core/storage/domain/repositories/image_storage_repository.dart';
+import 'package:sweetella_admin/core/storage/domain/use_cases/upload_image_use_case.dart';
 import 'package:sweetella_admin/features/categories/data/datasources/category_remote_data_source.dart';
 import 'package:sweetella_admin/features/categories/data/repositories/category_repository_impl.dart';
 import 'package:sweetella_admin/features/categories/domain/repositories/category_repository.dart';
@@ -13,6 +18,10 @@ import 'package:sweetella_admin/features/categories/domain/usecases/delete_categ
 import 'package:sweetella_admin/features/categories/domain/usecases/get_categories.dart';
 import 'package:sweetella_admin/features/categories/domain/usecases/update_category.dart';
 import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
+import 'package:sweetella_admin/features/orders/data/datasources/order_remote_data_source.dart';
+import 'package:sweetella_admin/features/orders/data/repositories/order_repository_impl.dart';
+import 'package:sweetella_admin/features/orders/domain/repositories/order_repository.dart';
+import 'package:sweetella_admin/features/orders/presentation/cubit/order_cubit.dart';
 import 'package:sweetella_admin/features/products/data/datasources/product_remote_data_source.dart';
 import 'package:sweetella_admin/features/products/data/datasources/product_remote_data_source_impl.dart';
 import 'package:sweetella_admin/features/products/data/repositories/product_repository_impl.dart';
@@ -32,6 +41,31 @@ void setupServiceLocator() {
   );
   sl.registerLazySingleton<FirebaseServices>(
     () => FirebaseServices.createDefault(),
+  );
+
+  // Storage Data Sources
+  sl.registerLazySingleton<StorageRemoteDataSource>(
+    () => CloudinaryRemoteDataSource(
+      dio: sl<Dio>(),
+      cloudName: const String.fromEnvironment(
+        'CLOUDINARY_CLOUD_NAME',
+        defaultValue: 'dbrqzrmey',
+      ),
+      uploadPreset: const String.fromEnvironment(
+        'CLOUDINARY_UPLOAD_PRESET',
+        defaultValue: 'ml_default',
+      ),
+    ),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<ImageStorageRepository>(
+    () => CloudinaryImageStorageRepository(sl<StorageRemoteDataSource>()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton<UploadImageUseCase>(
+    () => UploadImageUseCase(sl<ImageStorageRepository>()),
   );
 
   sl.registerLazySingleton<ProductRemoteDataSource>(
@@ -76,4 +110,12 @@ void setupServiceLocator() {
       categoryRepository: sl<CategoryRepository>(),
     ),
   );
+
+  sl.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(sl<FirebaseServices>()),
+  );
+  sl.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(sl<OrderRemoteDataSource>()),
+  );
+  sl.registerFactory(() => OrderCubit(sl<OrderRepository>()));
 }
