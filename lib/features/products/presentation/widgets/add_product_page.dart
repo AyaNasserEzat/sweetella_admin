@@ -103,22 +103,18 @@ class _AddProductPageState extends State<AddProductPage> {
       String imageUrl = widget.productToEdit?.imageUrl ?? '';
 
       if (_selectedImage != null) {
-        final UploadedImage? uploadedImage = await uploadCubit.upload(
-          _selectedImage!,
-        );
+        final uploadedImage = await uploadCubit.upload(_selectedImage!);
 
         if (!mounted) return;
 
         if (uploadedImage == null) {
-          _showSnackBar(
-            'Image upload failed. Check the upload error.',
-            isError: true,
-          );
+          _showSnackBar('Image upload failed', isError: true);
           return;
         }
 
         imageUrl = uploadedImage.url;
       }
+
       final product = ProductEntity(
         id: widget.productToEdit?.id ?? '',
         name: _nameController.text.trim(),
@@ -134,9 +130,9 @@ class _AddProductPageState extends State<AddProductPage> {
       final productCubit = context.read<ProductCubit>();
 
       if (widget.productToEdit == null) {
-        productCubit.addProduct(product);
+        await productCubit.addProduct(product);
       } else {
-        productCubit.updateProduct(product);
+        await productCubit.updateProduct(product);
       }
     } catch (e, stackTrace) {
       debugPrint('SAVE PRODUCT ERROR: $e');

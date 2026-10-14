@@ -12,14 +12,15 @@ class UploadImageCubit extends Cubit<ImageUploadState> {
     emit(ImageUploadLoading());
 
     final result = await uploadImageUseCase(image);
-    result.fold(
-      (l) {
-        emit(ImageUploadFailure(l));
+
+    return result.fold<UploadedImage?>(
+      (failure) {
+        emit(ImageUploadFailure(failure));
         return null;
       },
-      (result) {
-        emit(ImageUploadSuccess(result));
-        return result;
+      (uploadedImage) {
+        emit(ImageUploadSuccess(uploadedImage));
+        return uploadedImage;
       },
     );
   }
