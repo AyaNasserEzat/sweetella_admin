@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/core/extension/localization_extension.dart';
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 import 'package:sweetella_admin/core/widgets/custom_table.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/custom_cached_network_image.dart';
-import 'package:sweetella_admin/features/orders/presentation/widgets/product.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
+import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
+import 'package:sweetella_admin/features/products/presentation/cubit/product_state.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/product_actions.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/product_availability.dart';
 
@@ -69,6 +72,6 @@ Future<void> _confirmDelete(BuildContext context, ProductEntity product) async {
     ),
   );
   if (confirmed == true && context.mounted) {
-    //  await context.read<ProductCubit>().delete(product.id);
+    await context.read<ProductCubit>().deleteProduct(product.id);
   }
 }

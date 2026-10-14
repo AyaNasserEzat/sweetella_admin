@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
+import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_state.dart';
@@ -21,7 +22,31 @@ class ProductsPageContent extends StatelessWidget {
           children: [
             //ProductsPageHeader(onAdd: () => _openForm(context)),
             SizedBox(height: tokens.space.lg),
-            BlocBuilder<ProductCubit, ProductState>(
+
+            BlocConsumer<ProductCubit, ProductState>(
+              listener: (context, state) {
+                if (state is ProductOperationSuccess) {
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.green,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                } else if (state is ProductError) {
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(state.failure.message(context)),
+                        backgroundColor: Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                }
+              },
               builder: (context, state) {
                 if (state is ProductLoading) {
                   return Skeletonizer(
@@ -30,11 +55,21 @@ class ProductsPageContent extends StatelessWidget {
                       products: List.generate(7, (_) => ProductEntity.empty()),
                     ),
                   );
-                } else if (state is ProductLoaded) {
-                  return ProductsTable(products: state.products);
-                } else {
-                  return Text(state.toString());
                 }
+
+                if (state is ProductLoaded) {
+                  return ProductsTable(products: state.products);
+                }
+
+                if (state is ProductOperationSuccess) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (state is ProductError) {
+                  return Center(child: Text(state.failure.message(context)));
+                }
+
+                return const SizedBox.shrink();
               },
             ),
           ],
@@ -55,28 +90,3 @@ class ProductsPageContent extends StatelessWidget {
   //     ),
   //   );
 }
-
-//   Future<void> _confirmDelete(BuildContext context, Product product) async {
-//     final l10n = context.l10n;
-//     final confirmed = await showDialog<bool>(
-//       context: context,
-//       builder: (context) => AlertDialog(
-//         title: Text(l10n.deleteProductTitle),
-//         content: Text(l10n.deleteProductMessage(product.name)),
-//         actions: [
-//           TextButton(
-//             onPressed: () => Navigator.of(context).pop(false),
-//             child: Text(l10n.cancel),
-//           ),
-//           FilledButton(
-//             onPressed: () => Navigator.of(context).pop(true),
-//             child: Text(l10n.deleteProduct),
-//           ),
-//         ],
-//       ),
-//     );
-//     if (confirmed == true && context.mounted) {
-//     //  await context.read<ProductCubit>().delete(product.id);
-//     }
-//   }
-// }
