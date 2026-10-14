@@ -163,9 +163,9 @@ class _AddProductPageState extends State<AddProductPage> {
         ),
         BlocListener<UploadImageCubit, ImageUploadState>(
           listener: (context, state) {
-            if (state is ImageUploadSuccess) {
-              _showSnackBar('Image uploaded successfully', isError: false);
-            }
+            // if (state is ImageUploadSuccess) {
+            //   _showSnackBar('Image uploaded successfully', isError: false);
+            // }
             if (state is ImageUploadFailure) {
               _showSnackBar(state.message.message(context), isError: true);
             }
@@ -309,7 +309,7 @@ class _AddProductPageState extends State<AddProductPage> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                         onPressed: _isSaving ? () {} : _saveProduct,
-                        child: state is ProductLoading
+                        child: _isSaving
                             ? const SizedBox(
                                 width: 22,
                                 height: 22,

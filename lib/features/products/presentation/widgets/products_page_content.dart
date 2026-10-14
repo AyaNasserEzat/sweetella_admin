@@ -65,10 +65,6 @@ class ProductsPageContent extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (state is ProductError) {
-                  return Center(child: Text(state.failure.message(context)));
-                }
-
                 return const SizedBox.shrink();
               },
             ),
