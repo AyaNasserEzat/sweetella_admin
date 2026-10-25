@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:sweetella_admin/core/cubits/upload_image_cubit.dart';
 import 'package:sweetella_admin/core/cubits/upload_image_usecase.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
-import 'package:sweetella_admin/core/storage/domain/entities/uploaded_image.dart';
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
+import 'package:sweetella_admin/core/widgets/snack_bar.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/custom_text_field.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/image_upload_box.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
@@ -32,11 +31,23 @@ class _AddProductPageState extends State<AddProductPage> {
   late TextEditingController _descController;
   late TextEditingController _priceController;
   late TextEditingController _stockController;
+  // حقول للمنتج البسيط (السعر الثابت والمخزون)
+  late TextEditingController _singlePriceController;
+  late TextEditingController _singleStockController;
+
+  bool _hasVariants = false;
+  List<ProductVariantEntity> _variants = [];
+  final List<VariantRowControllers> _variantRows = [];
+  final List<AdddonRowControllers> _addonsRows = [];
+  final sizeController = TextEditingController();
+  final priceController = TextEditingController();
+  final stockController = TextEditingController();
+
+  bool _hasAddons = false;
+  List<ProductAddonEntity> _addons = [];
 
   XFile? _selectedImage;
   String? _selectedImagePath;
-
-  bool _isAvailable = true;
   bool _isSaving = false;
 
   @override
@@ -50,12 +61,86 @@ class _AddProductPageState extends State<AddProductPage> {
       text: product?.categoryName ?? '',
     );
     _descController = TextEditingController(text: product?.description ?? '');
-    _priceController = TextEditingController(
-      text: product?.price.toString() ?? '100',
-    );
+    // _priceController = TextEditingController(
+    //   text: product?.price.toString() ?? '100',
+    // );
     _stockController = TextEditingController(text: '10');
+    _selectedImagePath = widget.productToEdit?.imageUrl;
 
-    _isAvailable = product?.isAvailable ?? true;
+    _hasVariants = product?.hasVariants ?? false;
+    _hasAddons = product?.hasAddons ?? false;
+    // تعبئة الأحجام القديمة في حال التعديل أو بدء صف افتراضي
+    if (product != null && product.variants.isNotEmpty) {
+      for (var v in product.variants) {
+        _variantRows.add(
+          VariantRowControllers(
+            id: v.id,
+            nameController: TextEditingController(text: v.sizeName),
+            priceController: TextEditingController(text: v.price.toString()),
+            stockController: TextEditingController(text: v.stock.toString()),
+          ),
+        );
+      }
+    } else {
+      // صف افتراضي أولي
+      _addVariantRow(name: 'التحجم القياسي', price: '100', stock: '10');
+    }
+    _variants = product != null ? List.from(product.variants) : [];
+    if (product != null && product.addons.isNotEmpty) {
+      for (var v in product.variants) {
+        _addonsRows.add(
+          AdddonRowControllers(
+            id: v.id,
+            nameController: TextEditingController(text: v.sizeName),
+            priceController: TextEditingController(text: v.price.toString()),
+            stockController: TextEditingController(text: v.stock.toString()),
+          ),
+        );
+      }
+    } else {
+      _addAddonRow(name: 'التحجم القياسي', price: '100', stock: '10');
+    }
+    _addons = product != null ? List.from(product.addons) : [];
+
+    final defaultPrice = (_variants.isNotEmpty)
+        ? _variants.first.price.toString()
+        : '25';
+    final defaultStock = (_variants.isNotEmpty)
+        ? _variants.first.stock.toString()
+        : '20';
+
+    _singlePriceController = TextEditingController(text: defaultPrice);
+    _singleStockController = TextEditingController(text: defaultStock);
+  }
+
+  void _addVariantRow({
+    String name = '',
+    String price = '',
+    String stock = '',
+  }) {
+    setState(() {
+      _variantRows.add(
+        VariantRowControllers(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          nameController: TextEditingController(text: name),
+          priceController: TextEditingController(text: price),
+          stockController: TextEditingController(text: stock),
+        ),
+      );
+    });
+  }
+
+  void _addAddonRow({String name = '', String price = '', String stock = ''}) {
+    setState(() {
+      _addonsRows.add(
+        AdddonRowControllers(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          nameController: TextEditingController(text: name),
+          priceController: TextEditingController(text: price),
+          stockController: TextEditingController(text: stock),
+        ),
+      );
+    });
   }
 
   @override
@@ -65,6 +150,14 @@ class _AddProductPageState extends State<AddProductPage> {
     _descController.dispose();
     _priceController.dispose();
     _stockController.dispose();
+    _singlePriceController.dispose();
+    _singleStockController.dispose();
+    for (var r in _variantRows) {
+      r.dispose();
+    }
+    for (var r in _addonsRows) {
+      r.dispose();
+    }
     super.dispose();
   }
 
@@ -82,18 +175,6 @@ class _AddProductPageState extends State<AddProductPage> {
     _selectedImage = pickedFile;
   }
 
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? Colors.red : Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-  }
-
   Future<void> _saveProduct() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
@@ -108,23 +189,38 @@ class _AddProductPageState extends State<AddProductPage> {
         if (!mounted) return;
 
         if (uploadedImage == null) {
-          _showSnackBar('Image upload failed', isError: true);
+          showsnakbar(context, 'Image upload failed', SnachBarState.error);
           return;
         }
 
         imageUrl = uploadedImage.url;
       }
+      List<ProductVariantEntity> finalVariants = _hasVariants
+          ? _variants
+          : [
+              ProductVariantEntity(
+                id: 'default',
+                sizeName: 'قطعة واحدة',
+                price: double.tryParse(_singlePriceController.text) ?? 0.0,
+                stock: int.tryParse(_singleStockController.text) ?? 10,
+              ),
+            ];
 
       final product = ProductEntity(
-        id: widget.productToEdit?.id ?? '',
-        name: _nameController.text.trim(),
-        categoryName: _categoryController.text.trim(),
-        description: _descController.text.trim(),
-        imageUrl: imageUrl,
+        id:
+            widget.productToEdit?.id ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
+        name: _nameController.text,
+        categoryName: _categoryController.text,
         categoryId: widget.productToEdit?.categoryId ?? '',
-        price: int.tryParse(_priceController.text.trim()) ?? 0,
-        salePrice: widget.productToEdit?.salePrice ?? 30,
-        attributes: widget.productToEdit?.attributes ?? [],
+        description: _descController.text,
+        imageUrl: imageUrl,
+
+        isAvailable: true,
+        hasVariants: _hasVariants,
+        hasAddons: _hasAddons,
+        variants: finalVariants,
+        addons: _hasAddons ? _addons : [],
       );
 
       final productCubit = context.read<ProductCubit>();
@@ -139,7 +235,7 @@ class _AddProductPageState extends State<AddProductPage> {
       debugPrintStack(stackTrace: stackTrace);
 
       if (mounted) {
-        _showSnackBar('Save failed: $e', isError: true);
+        showsnakbar(context, 'Save failed: $e', SnachBarState.error);
       }
     } finally {
       if (mounted) {
@@ -150,190 +246,533 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<ProductCubit, ProductState>(
-          listener: (context, state) {
-            if (state is ProductOperationSuccess) {
-              _showSnackBar(state.message, isError: false);
-            } else if (state is ProductError) {
-              _showSnackBar(state.failure.message(context), isError: true);
-            }
-          },
-        ),
-        BlocListener<UploadImageCubit, ImageUploadState>(
-          listener: (context, state) {
-            // if (state is ImageUploadSuccess) {
-            //   _showSnackBar('Image uploaded successfully', isError: false);
-            // }
-            if (state is ImageUploadFailure) {
-              _showSnackBar(state.message.message(context), isError: true);
-            }
-          },
-        ),
-      ],
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 16,
-        ),
-        child: CustomShadowContanier(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    widget.productToEdit == null
-                        ? 'إضافة منتج جديد'
-                        : 'تعديل المنتج',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+    return Scaffold(
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<ProductCubit, ProductState>(
+            listener: (context, state) {
+              if (state is ProductOperationSuccess) {
+                showsnakbar(context, state.message, SnachBarState.success);
+              } else if (state is ProductError) {
+                showsnakbar(
+                  context,
+                  state.failure.message(context),
+                  SnachBarState.error,
+                );
+              }
+            },
+          ),
+          BlocListener<UploadImageCubit, ImageUploadState>(
+            listener: (context, state) {
+              if (state is ImageUploadFailure) {
+                showsnakbar(
+                  context,
+                  state.message.message(context),
+                  SnachBarState.error,
+                );
+              }
+            },
+          ),
+        ],
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: CustomShadowContanier(
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      widget.productToEdit == null
+                          ? 'إضافة منتج جديد'
+                          : 'تعديل المنتج',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
 
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                  ImageUploadBox(
-                    label: 'Upload image',
-                    imagePath: _selectedImagePath,
-                    onTap: _pickImage,
-                  ),
+                    ImageUploadBox(
+                      label: 'Upload image',
+                      imagePath: _selectedImagePath,
+                      onTap: _pickImage,
+                    ),
 
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-                  CustomTextField(
-                    label: 'Product name',
-                    hintText: 'Product name',
-                    isRequired: true,
-                    controller: _nameController,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Product name is required';
-                      }
-                      return null;
-                    },
-                  ),
+                    CustomTextField(
+                      label: 'Product name',
+                      hintText: 'Product name',
+                      isRequired: true,
+                      controller: _nameController,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Product name is required';
+                        }
+                        return null;
+                      },
+                    ),
 
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-                  CustomTextField(
-                    label: 'Category name',
-                    hintText: 'Category name',
-                    isRequired: true,
-                    controller: _categoryController,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Category name is required';
-                      }
-                      return null;
-                    },
-                  ),
+                    CustomTextField(
+                      label: 'Category name',
+                      hintText: 'Category name',
+                      isRequired: true,
+                      controller: _categoryController,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Category name is required';
+                        }
+                        return null;
+                      },
+                    ),
 
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-                  CustomTextField(
-                    label: 'Description',
-                    hintText: 'Description',
-                    isRequired: true,
-                    controller: _descController,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Description is required';
-                      }
-                      return null;
-                    },
-                  ),
+                    CustomTextField(
+                      label: 'Description',
+                      hintText: 'Description',
+                      isRequired: true,
+                      controller: _descController,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Description is required';
+                        }
+                        return null;
+                      },
+                    ),
 
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          label: 'Price',
-                          hintText: 'Price',
-                          isRequired: true,
-                          controller: _priceController,
-                          validator: (value) {
-                            final price = double.tryParse(value?.trim() ?? '');
-
-                            if (price == null || price < 0) {
-                              return 'Enter a valid price';
-                            }
-
-                            return null;
-                          },
+                    const SizedBox(height: 10),
+                    // ==========================================
+                    // قسم تففعيل الأحجام والأسعار المتعددة
+                    // ==========================================
+                    SwitchListTile(
+                      title: const Text(
+                        'هل يوجد لهذا المنتج أحجام أو أوزان متعددة؟',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: CustomTextField(
-                          label: 'Stock',
-                          hintText: 'Stock',
-                          isRequired: true,
-                          controller: _stockController,
-                          validator: (value) {
-                            final stock = int.tryParse(value?.trim() ?? '');
+                      subtitle: const Text(
+                        'مثل (صغير / وسط / كبير) أو (نصف كيلو / كيلو)',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                      value: _hasVariants,
+                      activeColor: Colors.brown,
+                      onChanged: (val) => setState(() => _hasVariants = val),
+                    ),
 
-                            if (stock == null || stock < 0) {
-                              return 'Enter valid stock';
-                            }
+                    if (_hasVariants) ...[
+                      const SizedBox(height: 8),
+                      // توليد الصفوف الثلاثة لكل حجم مباشرة زي الصورة
+                      ..._variantRows.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        var row = entry.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Row(
+                            children: [
+                              // زر الحذف (Trash Icon)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () {
+                                  if (_variantRows.length > 1) {
+                                    setState(() {
+                                      _variantRows.removeAt(index);
+                                    });
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'يجب أن يحتوي المنتج على حجم واحد على الأقل',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ), // حقل المخزون
+                              Expanded(
+                                child: TextFormField(
+                                  controller: row.stockController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    labelText: 'المخزون',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // حقل السعر
+                              Expanded(
+                                child: TextFormField(
+                                  controller: row.priceController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    labelText: 'السعر',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // حقل اسم الحجم
+                              Expanded(
+                                flex: 2,
+                                child: TextFormField(
+                                  controller: row.nameController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'اسم الحجم',
+                                    hintText: 'مثلاً: كبير',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
 
-                            return null;
-                          },
+                      // زرار إضافة حجم أو وزن جديد (تحت الحقول مباشرة)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.brown,
+                          ),
+                          icon: const Icon(Icons.add),
+                          label: const Text('إضافة حجم أو وزن جديد'),
+                          onPressed: () => _addVariantRow(),
                         ),
                       ),
                     ],
-                  ),
 
-                  const SizedBox(height: 20),
+                    const Divider(height: 30),
 
-                  BlocBuilder<ProductCubit, ProductState>(
-                    buildWhen: (previous, current) =>
-                        current is ProductLoading ||
-                        current is ProductError ||
-                        current is ProductOperationSuccess,
-                    builder: (context, state) {
-                      return ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.tokens.color.brand,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: Colors.grey,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                        onPressed: _isSaving ? () {} : _saveProduct,
-                        child: _isSaving
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.5,
-                                  color: Colors.white,
+                    // ==========================================
+                    // 2. مفتاح الإضافات (Add-ons)
+                    // ==========================================
+                    SwitchListTile(
+                      title: const Text(
+                        'هل توجد إضافات لهذا المنتج؟',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text(
+                        'مثل: (شمعة عيد ميلاد، صوص إضافي، كارت)',
+                      ),
+                      value: _hasAddons,
+                      activeColor: Colors.brown,
+                      onChanged: (val) => setState(() => _hasAddons = val),
+                    ),
+
+                    if (_hasAddons) ...[
+                      const SizedBox(height: 8),
+                      // توليد الصفوف الثلاثة لكل حجم مباشرة زي الصورة
+                      ..._addonsRows.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        var row = entry.value;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Row(
+                            children: [
+                              // زر الحذف (Trash Icon)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
                                 ),
-                              )
-                            : Text(
-                                widget.productToEdit == null
-                                    ? 'حفظ وإضافة'
-                                    : 'تعديل المنتج',
+                                onPressed: () {
+                                  if (_addonsRows.length > 1) {
+                                    setState(() {
+                                      _addonsRows.removeAt(index);
+                                    });
+                                  }
+                                },
+                              ), // حقل المخزون
+                              Expanded(
+                                child: TextFormField(
+                                  controller: row.stockController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    labelText: 'المخزون',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                ),
                               ),
-                      );
-                    },
-                  ),
+                              const SizedBox(width: 8),
+                              // حقل السعر
+                              Expanded(
+                                child: TextFormField(
+                                  controller: row.priceController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    labelText: 'السعر',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // حقل اسم الحجم
+                              Expanded(
+                                flex: 2,
+                                child: TextFormField(
+                                  controller: row.nameController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'اسم الحجم',
+                                    hintText: 'مثلاً: كبير',
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
 
-                  const SizedBox(height: 20),
-                ],
+                      // زرار إضافة حجم أو وزن جديد (تحت الحقول مباشرة)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.brown,
+                          ),
+                          icon: const Icon(Icons.add),
+                          label: const Text('إضافة حجم أو وزن جديد'),
+                          onPressed: () => _addAddonRow(),
+                        ),
+                      ),
+                    ],
+
+                    const Divider(height: 30),
+
+                    BlocBuilder<ProductCubit, ProductState>(
+                      buildWhen: (previous, current) =>
+                          current is ProductLoading ||
+                          current is ProductError ||
+                          current is ProductOperationSuccess,
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: context.tokens.color.brand,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor: Colors.grey,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          onPressed: _isSaving ? () {} : _saveProduct,
+                          child: _isSaving
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  widget.productToEdit == null
+                                      ? 'حفظ وإضافة'
+                                      : 'تعديل المنتج',
+                                ),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _showAddVariantDialog(BuildContext context) {
+    final sizeController = TextEditingController();
+    final priceController = TextEditingController();
+    final stockController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('إضافة حجم جديد'),
+        content: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 10,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: sizeController,
+                decoration: const InputDecoration(
+                  labelText: 'اسم الحجم (مثال: كبير / 2 كيلو)',
+                ),
+              ),
+            ),
+            Expanded(
+              child: TextField(
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'السعر (ج.م)'),
+              ),
+            ),
+            Expanded(
+              child: TextField(
+                controller: stockController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'المخزون اليومي'),
+              ),
+            ),
+          ],
+        ),
+
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.tokens.color.brand,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              if (sizeController.text.isNotEmpty &&
+                  priceController.text.isNotEmpty) {
+                setState(() {
+                  _variants.add(
+                    ProductVariantEntity(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      sizeName: sizeController.text,
+                      price: double.tryParse(priceController.text) ?? 0.0,
+                      stock: int.tryParse(stockController.text) ?? 10,
+                    ),
+                  );
+                });
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('إضافة'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddAddonDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final priceController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('إضافة خيار إضافي'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'اسم الإضافة (مثال: صوص إضافي)',
+              ),
+            ),
+            TextField(
+              controller: priceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'السعر الإضافي (ج.م)',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.brown,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              if (nameController.text.isNotEmpty &&
+                  priceController.text.isNotEmpty) {
+                setState(() {
+                  _addons.add(
+                    ProductAddonEntity(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      name: nameController.text,
+                      price: double.tryParse(priceController.text) ?? 0.0,
+                    ),
+                  );
+                });
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('إضافة'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class VariantRowControllers {
+  final String id;
+  final TextEditingController nameController;
+  final TextEditingController priceController;
+  final TextEditingController stockController;
+
+  VariantRowControllers({
+    required this.id,
+    required this.nameController,
+    required this.priceController,
+    required this.stockController,
+  });
+
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    stockController.dispose();
+  }
+}
+
+class AdddonRowControllers {
+  final String id;
+  final TextEditingController nameController;
+  final TextEditingController priceController;
+  final TextEditingController stockController;
+
+  AdddonRowControllers({
+    required this.id,
+    required this.nameController,
+    required this.priceController,
+    required this.stockController,
+  });
+
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    stockController.dispose();
   }
 }

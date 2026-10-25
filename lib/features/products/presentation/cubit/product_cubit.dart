@@ -41,12 +41,11 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> updateProduct(ProductEntity product) async {
     emit(ProductLoading());
     final result = await updateProductUseCase(product);
-    result.fold(
-      (failure) => emit(ProductError(failure)),
-      (_) => emit(
-        ProductOperationSuccess('Product updated successfully'),
-      ), // إعادة تحميل القائمة بعد التعديل
-    );
+    result.fold((failure) => emit(ProductError(failure)), (_) {
+      emit(ProductOperationSuccess('Product updated successfully'));
+
+      fetchProducts(); // إعادة تحميل القائمة بعد التعديل
+    });
   }
 
   Future<void> deleteProduct(String productId) async {

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
+import 'package:sweetella_admin/core/widgets/snack_bar.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_state.dart';
@@ -26,25 +27,13 @@ class ProductsPageContent extends StatelessWidget {
             BlocConsumer<ProductCubit, ProductState>(
               listener: (context, state) {
                 if (state is ProductOperationSuccess) {
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(
-                        content: Text(state.message),
-                        backgroundColor: Colors.green,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                  showsnakbar(context, state.message, SnachBarState.success);
                 } else if (state is ProductError) {
-                  ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(
-                        content: Text(state.failure.message(context)),
-                        backgroundColor: Colors.red,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                  showsnakbar(
+                    context,
+                    state.failure.message(context),
+                    SnachBarState.error,
+                  );
                 }
               },
               builder: (context, state) {
@@ -59,10 +48,6 @@ class ProductsPageContent extends StatelessWidget {
 
                 if (state is ProductLoaded) {
                   return ProductsTable(products: state.products);
-                }
-
-                if (state is ProductOperationSuccess) {
-                  return const Center(child: CircularProgressIndicator());
                 }
 
                 return const SizedBox.shrink();

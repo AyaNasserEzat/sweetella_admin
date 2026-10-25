@@ -32,21 +32,24 @@ class OrderFailure extends OrderState {
 }
 
 class OrderActionLoading extends OrderState {
-  const OrderActionLoading(this.order);
+  const OrderActionLoading(this.order, this.orders);
 
   final OrderEntity order;
+  final List<OrderEntity> orders;
 }
 
 class OrderActionSuccess extends OrderState {
-  const OrderActionSuccess(this.order, this.message);
+  const OrderActionSuccess(this.order, this.message, this.orders);
 
   final OrderEntity order;
   final String message;
+  final List<OrderEntity> orders;
 }
 
 class OrderActionFailure extends OrderState {
-  const OrderActionFailure(this.order, this.error);
+  const OrderActionFailure(this.order, this.error, this.orders);
 
   final OrderEntity order;
   final Failure error;
+  final List<OrderEntity> orders;
 }

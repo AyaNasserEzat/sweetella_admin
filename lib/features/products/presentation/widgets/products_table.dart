@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
+import 'package:sweetella_admin/core/cubits/upload_image_cubit.dart';
+import 'package:sweetella_admin/core/di/service_locator.dart';
 import 'package:sweetella_admin/core/extension/localization_extension.dart';
+import 'package:sweetella_admin/core/storage/domain/use_cases/upload_image_use_case.dart';
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 import 'package:sweetella_admin/core/widgets/custom_table.dart';
+import 'package:sweetella_admin/core/widgets/delete_dialog.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/custom_cached_network_image.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
-import 'package:sweetella_admin/features/products/presentation/cubit/product_state.dart';
+import 'package:sweetella_admin/features/products/presentation/widgets/add_product_page.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/product_actions.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/product_availability.dart';
 
@@ -18,15 +21,16 @@ class ProductsTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return CustomShadowContanier(
       child: CustomTable(
-        columnTitles: const [
+        columnTitles: [
           'Image',
-          'name',
-          'Category',
-          'Price',
-          'avilable',
-          'Action',
+          l10n.productName,
+          // l10n.category,
+          l10n.price,
+          l10n.available,
+          l10n.actions,
         ],
         rows: products.map((product) {
           return DataRow(
@@ -34,13 +38,32 @@ class ProductsTable extends StatelessWidget {
               DataCell(CustomCachedNetworkImage(imageUrl: product.imageUrl)),
               DataCell(Text(product.name)),
               DataCell(Text(product.categoryName)),
-              DataCell(Text(product.price.toString())),
+              // DataCell(Text(product.price.toString())),
               DataCell(ProductAvailability(product: product)),
               DataCell(
                 ProductActions(
-                  onEdit: () {},
+                  onEdit: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create: (_) =>
+                                  UploadImageCubit(sl<UploadImageUseCase>()),
+                            ),
+                            BlocProvider(
+                              create: (context) => sl<ProductCubit>(),
+                            ),
+                          ],
+
+                          child: AddProductPage(productToEdit: product),
+                        ),
+                      ),
+                    );
+                  },
                   onDelete: () {
-                    _confirmDelete(context, product);
+                    confirmDelete(context, product);
                   },
                 ),
               ),
@@ -49,29 +72,5 @@ class ProductsTable extends StatelessWidget {
         }).toList(),
       ),
     );
-  }
-}
-
-Future<void> _confirmDelete(BuildContext context, ProductEntity product) async {
-  final l10n = context.l10n;
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(l10n.deleteProductTitle),
-      content: Text(l10n.deleteProductMessage(product)),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(l10n.deleteProduct),
-        ),
-      ],
-    ),
-  );
-  if (confirmed == true && context.mounted) {
-    await context.read<ProductCubit>().deleteProduct(product.id);
   }
 }

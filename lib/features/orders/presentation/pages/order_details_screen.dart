@@ -5,7 +5,6 @@ import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/core/widgets/custom_overlay_message.dart';
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 import 'package:sweetella_admin/core/widgets/custom_table.dart';
-import 'package:sweetella_admin/features/categories/presentation/widgets/custom_cached_network_image.dart';
 import 'package:sweetella_admin/features/orders/domain/entities/order_entity.dart';
 import 'package:sweetella_admin/features/orders/presentation/cubit/order_cubit.dart';
 import 'package:sweetella_admin/features/orders/presentation/cubit/order_state.dart';
@@ -37,13 +36,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
     return BlocConsumer<OrderCubit, OrderState>(
       listener: (context, state) {
-        if (state is OrderActionSuccess) {
+        if (state is OrderActionSuccess && state.order.id == widget.order.id) {
           setState(() => _selectedStatus = state.order.status);
           showOverlayMessage(context: context, text: state.message);
           return;
         }
 
-        if (state is OrderActionFailure) {
+        if (state is OrderActionFailure && state.order.id == widget.order.id) {
           showOverlayMessage(
             context: context,
             text: state.error.message(context),
@@ -53,13 +52,17 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       builder: (context, state) {
         final order = switch (state) {
           OrderDetailsLoaded(:final order) => order,
-          OrderActionLoading(:final order) => order,
-          OrderActionSuccess(:final order) => order,
-          OrderActionFailure(:final order) => order,
+          OrderActionLoading(:final order) when order.id == widget.order.id =>
+            order,
+          OrderActionSuccess(:final order) when order.id == widget.order.id =>
+            order,
+          OrderActionFailure(:final order) when order.id == widget.order.id =>
+            order,
           _ => widget.order,
         };
 
-        final isUpdating = state is OrderActionLoading;
+        final isUpdating =
+            state is OrderActionLoading && state.order.id == widget.order.id;
 
         return Scaffold(
           backgroundColor: colorScheme.surface,

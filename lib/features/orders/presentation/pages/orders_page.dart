@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sweetella_admin/core/di/service_locator.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
-import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/features/orders/domain/entities/order_entity.dart';
 import 'package:sweetella_admin/features/orders/presentation/cubit/order_cubit.dart';
 import 'package:sweetella_admin/features/orders/presentation/cubit/order_state.dart';
@@ -56,8 +55,9 @@ class _OrdersView extends StatelessWidget {
 
                   final orders = switch (state) {
                     OrdersLoaded(:final orders) => orders,
-                    OrderActionSuccess(:final order) => [order],
-                    OrderActionFailure(:final order) => [order],
+                    OrderActionLoading(:final orders) => orders,
+                    OrderActionSuccess(:final orders) => orders,
+                    OrderActionFailure(:final orders) => orders,
                     _ => const <OrderEntity>[],
                   };
 
@@ -73,7 +73,6 @@ class _OrdersView extends StatelessWidget {
                   }
 
                   if (orders.isEmpty) {
-                    print(orders);
                     return Center(
                       child: Text(
                         'No orders found',
