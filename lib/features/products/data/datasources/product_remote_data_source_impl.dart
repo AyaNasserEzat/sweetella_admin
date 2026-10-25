@@ -40,21 +40,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<ProductModel> addProduct(ProductModel product) async {
     final document = _products.doc();
 
-    final savedProduct = ProductModel(
-      id: document.id,
-      name: product.name,
-      categoryId: product.categoryId,
-      categoryName: product.categoryName,
-      description: product.description,
-      imageUrl: product.imageUrl,
-      isAvailable: product.isAvailable,
-      hasVariants: product.hasVariants,
-      hasAddons: product.hasAddons,
-      variants: product.variants,
-      addons: product.addons,
-      price: product.price,
-      stock: product.stock,
-    );
+    final savedProduct = product.copyWith(id: document.id);
 
     await document.set(savedProduct.toJson());
 

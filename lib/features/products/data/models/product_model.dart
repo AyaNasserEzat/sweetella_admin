@@ -29,6 +29,37 @@ class ProductModel {
     this.price,
     this.stock,
   });
+  ProductModel copyWith({
+    String? id,
+    String? name,
+    String? categoryId,
+    String? categoryName,
+    String? description,
+    String? imageUrl,
+    bool? isAvailable,
+    bool? hasVariants,
+    bool? hasAddons,
+    List<ProductVariantModel>? variants,
+    List<ProductAddonModel>? addons,
+    double? price,
+    int? stock,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isAvailable: isAvailable ?? this.isAvailable,
+      hasVariants: hasVariants ?? this.hasVariants,
+      hasAddons: hasAddons ?? this.hasAddons,
+      variants: variants ?? this.variants,
+      addons: addons ?? this.addons,
+      price: price ?? this.price,
+      stock: stock ?? this.stock,
+    );
+  }
 
   // 1. استقبال البيانات من Firebase Firestore (JSON)
   factory ProductModel.fromJson(Map<String, dynamic> json, String docId) {
@@ -60,6 +91,7 @@ class ProductModel {
   // 2. إرسال البيانات إلى Firebase Firestore (JSON)
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'categoryId': categoryId,
       'categoryName': categoryName,
