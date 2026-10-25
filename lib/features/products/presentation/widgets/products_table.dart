@@ -27,6 +27,7 @@ class ProductsTable extends StatelessWidget {
         columnTitles: [
           'Image',
           l10n.productName,
+          'Sizes and Prices',
           // l10n.category,
           l10n.price,
           l10n.available,
@@ -37,6 +38,17 @@ class ProductsTable extends StatelessWidget {
             cells: [
               DataCell(CustomCachedNetworkImage(imageUrl: product.imageUrl)),
               DataCell(Text(product.name)),
+              DataCell(
+                product.hasVariants
+                    ? Column(
+                        children: product.variants
+                            .map(
+                              (e) => Text('${e.price.toStringAsFixed(0)} EGP'),
+                            )
+                            .toList(),
+                      )
+                    : Text('${product.price?.toStringAsFixed(0) ?? 0} EGP'),
+              ),
               DataCell(Text(product.categoryName)),
               // DataCell(Text(product.price.toString())),
               DataCell(ProductAvailability(product: product)),

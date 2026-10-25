@@ -1,79 +1,3 @@
-// class ProductEntity {
-//   const ProductEntity({
-//     required this.id,
-//     required this.name,
-//     required this.categoryId,
-//     required this.categoryName,
-//     required this.description,
-//     required this.price,
-//     required this.salePrice,
-//     required this.imageUrl,
-//     required this.attributes,
-//   });
-
-//   factory ProductEntity.empty() {
-//     return const ProductEntity(
-//       id: '',
-//       name: '.........',
-//       categoryId: '',
-//       categoryName: '.........',
-//       description: '',
-//       price: 100000,
-//       salePrice: 100000,
-//       imageUrl: '',
-//       attributes: [],
-//     );
-//   }
-
-//   final String id;
-//   final String name;
-//   final String categoryId;
-//   final String categoryName;
-//   final String description;
-//   final int price;
-//   final int salePrice;
-//   final String imageUrl;
-//   final List<ProductAttribute> attributes;
-
-//   bool get isAvailable =>
-//       attributes.isEmpty ||
-//       attributes.any(
-//         (attribute) => attribute.options.any((option) => option.stock > 0),
-//       );
-
-//   ProductEntity copyWith({String? id}) {
-//     return ProductEntity(
-//       id: id ?? this.id,
-//       name: name,
-//       categoryId: categoryId,
-//       categoryName: categoryName,
-//       description: description,
-//       price: price,
-//       salePrice: salePrice,
-//       imageUrl: imageUrl,
-//       attributes: attributes,
-//     );
-//   }
-// }
-
-// class ProductAttribute {
-//   const ProductAttribute({required this.title, required this.options});
-
-//   final String title;
-//   final List<ProductOption> options;
-// }
-
-// class ProductOption {
-//   const ProductOption({
-//     required this.value,
-//     required this.priceModifier,
-//     required this.stock,
-//   });
-
-//   final String value;
-//   final double priceModifier;
-//   final int stock;
-// }
 class ProductEntity {
   const ProductEntity({
     required this.id,
@@ -87,6 +11,8 @@ class ProductEntity {
     required this.hasAddons,
     required this.variants,
     required this.addons,
+    this.price,
+    this.stock,
   });
 
   factory ProductEntity.empty() {
@@ -102,6 +28,8 @@ class ProductEntity {
       hasAddons: false,
       variants: [],
       addons: [],
+      price: 0.0,
+      stock: 0,
     );
   }
 
@@ -116,20 +44,38 @@ class ProductEntity {
   final bool hasAddons;
   final List<ProductVariantEntity> variants;
   final List<ProductAddonEntity> addons;
+  final double? price;
+  final int? stock;
 
-  ProductEntity copyWith({String? id}) {
+  ProductEntity copyWith({
+    String? id,
+    String? name,
+    String? categoryId,
+    String? categoryName,
+    String? description,
+    String? imageUrl,
+    bool? isAvailable,
+    bool? hasVariants,
+    bool? hasAddons,
+    List<ProductVariantEntity>? variants,
+    List<ProductAddonEntity>? addons,
+    double? price,
+    int? stock,
+  }) {
     return ProductEntity(
       id: id ?? this.id,
-      name: name,
-      categoryId: categoryId,
-      categoryName: categoryName,
-      description: description,
-      imageUrl: imageUrl,
-      isAvailable: isAvailable,
-      hasVariants: hasVariants,
-      hasAddons: hasAddons,
-      variants: variants,
-      addons: addons,
+      name: name ?? this.name,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+      description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isAvailable: isAvailable ?? this.isAvailable,
+      hasVariants: hasVariants ?? this.hasVariants,
+      hasAddons: hasAddons ?? this.hasAddons,
+      variants: variants ?? this.variants,
+      addons: addons ?? this.addons,
+      price: price ?? this.price,
+      stock: stock ?? this.stock,
     );
   }
 }
@@ -153,9 +99,11 @@ class ProductAddonEntity {
     required this.id,
     required this.name,
     required this.price,
+    required this.stock,
   });
 
   final String id;
   final String name;
   final double price;
+  final int stock;
 }

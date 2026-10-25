@@ -36,7 +36,6 @@ class _AddProductPageState extends State<AddProductPage> {
   late TextEditingController _singleStockController;
 
   bool _hasVariants = false;
-  List<ProductVariantEntity> _variants = [];
   final List<VariantRowControllers> _variantRows = [];
   final List<AdddonRowControllers> _addonsRows = [];
   final sizeController = TextEditingController();
@@ -44,7 +43,6 @@ class _AddProductPageState extends State<AddProductPage> {
   final stockController = TextEditingController();
 
   bool _hasAddons = false;
-  List<ProductAddonEntity> _addons = [];
 
   XFile? _selectedImage;
   String? _selectedImagePath;
@@ -61,9 +59,7 @@ class _AddProductPageState extends State<AddProductPage> {
       text: product?.categoryName ?? '',
     );
     _descController = TextEditingController(text: product?.description ?? '');
-    // _priceController = TextEditingController(
-    //   text: product?.price.toString() ?? '100',
-    // );
+
     _stockController = TextEditingController(text: '10');
     _selectedImagePath = widget.productToEdit?.imageUrl;
 
@@ -85,32 +81,27 @@ class _AddProductPageState extends State<AddProductPage> {
       // صف افتراضي أولي
       _addVariantRow(name: 'التحجم القياسي', price: '100', stock: '10');
     }
-    _variants = product != null ? List.from(product.variants) : [];
     if (product != null && product.addons.isNotEmpty) {
-      for (var v in product.variants) {
+      for (var v in product.addons) {
         _addonsRows.add(
           AdddonRowControllers(
             id: v.id,
-            nameController: TextEditingController(text: v.sizeName),
+            nameController: TextEditingController(text: v.name),
             priceController: TextEditingController(text: v.price.toString()),
             stockController: TextEditingController(text: v.stock.toString()),
           ),
         );
       }
     } else {
-      _addAddonRow(name: 'التحجم القياسي', price: '100', stock: '10');
+      _addAddonRow(name: 'name ', price: '100', stock: '10');
     }
-    _addons = product != null ? List.from(product.addons) : [];
 
-    final defaultPrice = (_variants.isNotEmpty)
-        ? _variants.first.price.toString()
-        : '25';
-    final defaultStock = (_variants.isNotEmpty)
-        ? _variants.first.stock.toString()
-        : '20';
-
-    _singlePriceController = TextEditingController(text: defaultPrice);
-    _singleStockController = TextEditingController(text: defaultStock);
+    _singlePriceController = TextEditingController(
+      text: product?.price.toString() ?? '0',
+    );
+    _singleStockController = TextEditingController(
+      text: product?.stock.toString() ?? '0',
+    );
   }
 
   void _addVariantRow({
@@ -196,16 +187,36 @@ class _AddProductPageState extends State<AddProductPage> {
         imageUrl = uploadedImage.url;
       }
       List<ProductVariantEntity> finalVariants = _hasVariants
-          ? _variants
+          ? _variantRows
+                .map(
+                  (e) => ProductVariantEntity(
+                    id: e.id,
+                    sizeName: e.nameController.text,
+                    price: double.tryParse(e.priceController.text) ?? 0.0,
+                    stock: int.tryParse(e.stockController.text) ?? 10,
+                  ),
+                )
+                .toList()
           : [
-              ProductVariantEntity(
-                id: 'default',
-                sizeName: 'قطعة واحدة',
-                price: double.tryParse(_singlePriceController.text) ?? 0.0,
-                stock: int.tryParse(_singleStockController.text) ?? 10,
-              ),
+              // ProductVariantEntity(
+              //   id: 'default',
+              //   sizeName: 'قطعة واحدة',
+              //   price: double.tryParse(_singlePriceController.text) ?? 0.0,
+              //   stock: int.tryParse(_singleStockController.text) ?? 10,
+              // ),
             ];
-
+      List<ProductAddonEntity> finalAddons = _hasAddons
+          ? _addonsRows
+                .map(
+                  (e) => ProductAddonEntity(
+                    id: e.id,
+                    name: e.nameController.text,
+                    price: double.tryParse(e.priceController.text) ?? 0.0,
+                    stock: int.tryParse(e.stockController.text) ?? 10,
+                  ),
+                )
+                .toList()
+          : [];
       final product = ProductEntity(
         id:
             widget.productToEdit?.id ??
@@ -220,7 +231,14 @@ class _AddProductPageState extends State<AddProductPage> {
         hasVariants: _hasVariants,
         hasAddons: _hasAddons,
         variants: finalVariants,
-        addons: _hasAddons ? _addons : [],
+        addons: _hasAddons ? finalAddons : [],
+        // لو مفيش أحجام، بنحط السعر والستوك المباشرين، ولو فيه بنخليهم null
+        price: _hasVariants
+            ? null
+            : double.tryParse(_singlePriceController.text) ?? 0.0,
+        stock: _hasVariants
+            ? null
+            : int.tryParse(_singleStockController.text) ?? 10,
       );
 
       final productCubit = context.read<ProductCubit>();
@@ -359,22 +377,50 @@ class _AddProductPageState extends State<AddProductPage> {
                     // ==========================================
                     SwitchListTile(
                       title: const Text(
-                        'هل يوجد لهذا المنتج أحجام أو أوزان متعددة؟',
+                        'Is there a size or weight for this product?',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
                       ),
                       subtitle: const Text(
-                        'مثل (صغير / وسط / كبير) أو (نصف كيلو / كيلو)',
+                        'Size (small / medium / large) or (half a kilo / a kilo)',
                         style: TextStyle(fontSize: 12),
                       ),
                       value: _hasVariants,
-                      activeColor: Colors.brown,
+                      activeColor: context.tokens.color.brand,
                       onChanged: (val) => setState(() => _hasVariants = val),
                     ),
 
-                    if (_hasVariants) ...[
+                    if (!_hasVariants) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _singleStockController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: 'Stock',
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _singlePriceController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                labelText: 'Price',
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ] else ...[
                       const SizedBox(height: 8),
                       // توليد الصفوف الثلاثة لكل حجم مباشرة زي الصورة
                       ..._variantRows.asMap().entries.map((entry) {
@@ -399,7 +445,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text(
-                                          'يجب أن يحتوي المنتج على حجم واحد على الأقل',
+                                          'The product must have at least one size',
                                         ),
                                       ),
                                     );
@@ -411,7 +457,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                   controller: row.stockController,
                                   keyboardType: TextInputType.number,
                                   decoration: const InputDecoration(
-                                    labelText: 'المخزون',
+                                    labelText: 'Stock',
                                     border: OutlineInputBorder(),
                                     isDense: true,
                                   ),
@@ -457,7 +503,7 @@ class _AddProductPageState extends State<AddProductPage> {
                             foregroundColor: Colors.brown,
                           ),
                           icon: const Icon(Icons.add),
-                          label: const Text('إضافة حجم أو وزن جديد'),
+                          label: const Text('Adding a new size or weight'),
                           onPressed: () => _addVariantRow(),
                         ),
                       ),
@@ -470,14 +516,14 @@ class _AddProductPageState extends State<AddProductPage> {
                     // ==========================================
                     SwitchListTile(
                       title: const Text(
-                        'هل توجد إضافات لهذا المنتج؟',
+                        'Is there an add-on for this product?',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: const Text(
-                        'مثل: (شمعة عيد ميلاد، صوص إضافي، كارت)',
+                        'example: (birthday candle, extra sauce, card)',
                       ),
                       value: _hasAddons,
-                      activeColor: Colors.brown,
+                      activeColor: context.tokens.color.brand,
                       onChanged: (val) => setState(() => _hasAddons = val),
                     ),
 
@@ -553,7 +599,7 @@ class _AddProductPageState extends State<AddProductPage> {
                         alignment: Alignment.centerRight,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.brown,
+                            foregroundColor: context.tokens.color.brand,
                           ),
                           icon: const Icon(Icons.add),
                           label: const Text('إضافة حجم أو وزن جديد'),
@@ -603,135 +649,6 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  void _showAddVariantDialog(BuildContext context) {
-    final sizeController = TextEditingController();
-    final priceController = TextEditingController();
-    final stockController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('إضافة حجم جديد'),
-        content: Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 10,
-          children: [
-            Expanded(
-              child: TextField(
-                controller: sizeController,
-                decoration: const InputDecoration(
-                  labelText: 'اسم الحجم (مثال: كبير / 2 كيلو)',
-                ),
-              ),
-            ),
-            Expanded(
-              child: TextField(
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'السعر (ج.م)'),
-              ),
-            ),
-            Expanded(
-              child: TextField(
-                controller: stockController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'المخزون اليومي'),
-              ),
-            ),
-          ],
-        ),
-
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.tokens.color.brand,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              if (sizeController.text.isNotEmpty &&
-                  priceController.text.isNotEmpty) {
-                setState(() {
-                  _variants.add(
-                    ProductVariantEntity(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      sizeName: sizeController.text,
-                      price: double.tryParse(priceController.text) ?? 0.0,
-                      stock: int.tryParse(stockController.text) ?? 10,
-                    ),
-                  );
-                });
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('إضافة'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAddAddonDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    final priceController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('إضافة خيار إضافي'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'اسم الإضافة (مثال: صوص إضافي)',
-              ),
-            ),
-            TextField(
-              controller: priceController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'السعر الإضافي (ج.م)',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.brown,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              if (nameController.text.isNotEmpty &&
-                  priceController.text.isNotEmpty) {
-                setState(() {
-                  _addons.add(
-                    ProductAddonEntity(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      name: nameController.text,
-                      price: double.tryParse(priceController.text) ?? 0.0,
-                    ),
-                  );
-                });
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text('إضافة'),
-          ),
-        ],
       ),
     );
   }
