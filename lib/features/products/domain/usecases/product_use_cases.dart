@@ -32,7 +32,7 @@ class AddProductUseCase {
   final ProductRepository repository;
   AddProductUseCase(this.repository);
 
-  Future<Either<Failure, void>> call(ProductEntity product) =>
+  Future<Either<Failure, ProductEntity>> call(ProductEntity product) =>
       repository.addProduct(product);
 }
 

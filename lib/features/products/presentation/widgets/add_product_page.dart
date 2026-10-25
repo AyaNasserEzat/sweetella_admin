@@ -139,16 +139,22 @@ class _AddProductPageState extends State<AddProductPage> {
     _nameController.dispose();
     _categoryController.dispose();
     _descController.dispose();
-    _priceController.dispose();
-    _stockController.dispose();
+
     _singlePriceController.dispose();
     _singleStockController.dispose();
-    for (var r in _variantRows) {
-      r.dispose();
+
+    sizeController.dispose();
+    priceController.dispose();
+    stockController.dispose();
+
+    for (final row in _variantRows) {
+      row.dispose();
     }
-    for (var r in _addonsRows) {
-      r.dispose();
+
+    for (final row in _addonsRows) {
+      row.dispose();
     }
+
     super.dispose();
   }
 
@@ -197,14 +203,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                 )
                 .toList()
-          : [
-              // ProductVariantEntity(
-              //   id: 'default',
-              //   sizeName: 'قطعة واحدة',
-              //   price: double.tryParse(_singlePriceController.text) ?? 0.0,
-              //   stock: int.tryParse(_singleStockController.text) ?? 10,
-              // ),
-            ];
+          : [];
       List<ProductAddonEntity> finalAddons = _hasAddons
           ? _addonsRows
                 .map(

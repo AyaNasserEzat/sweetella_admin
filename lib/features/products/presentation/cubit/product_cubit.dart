@@ -16,48 +16,65 @@ class ProductCubit extends Cubit<ProductState> {
     required this.updateProductUseCase,
     required this.deleteProductUseCase,
   }) : super(ProductInitial());
-
+  List<ProductEntity> _products = [];
   Future<void> fetchProducts() async {
     emit(ProductLoading());
     final result = await getProductsUseCase();
-    result.fold(
-      (failure) => emit(ProductError(failure)),
-      (products) => emit(ProductLoaded(products: products)),
-    );
+    result.fold((failure) => emit(ProductError(failure)), (products) {
+      _products = products;
+      emit(ProductLoaded(products: products));
+    });
   }
 
   Future<void> addProduct(ProductEntity product) async {
     emit(ProductLoading());
     final result = await addProductUseCase(product);
     if (isClosed) return;
-    result.fold(
-      (failure) => emit(ProductError(failure)),
-      (_) => emit(
-        ProductOperationSuccess('Product added successfully'),
-      ), // إعادة تحميل القائمة بعد الإضافة
-    );
+    result.fold((failure) => emit(ProductError(failure)), (newProduct) {
+      // 1. إضافة المنتج الجديد اللي راجع من السيرفر (بالـ ID الحقيقي) للقائمة المحلية
+      _products.add(newProduct);
+
+      emit(
+        ProductLoaded(
+          products: List.from(_products),
+          successMessage: 'Product added successfully',
+        ),
+      );
+    });
   }
 
   Future<void> updateProduct(ProductEntity product) async {
     emit(ProductLoading());
     final result = await updateProductUseCase(product);
     result.fold((failure) => emit(ProductError(failure)), (_) {
-      emit(ProductOperationSuccess('Product updated successfully'));
+      // 1. إيجاد العنصر وتحديثه في القائمة المحلية بناءً على الـ ID
+      final index = _products.indexWhere((p) => p.id == product.id);
+      if (index != -1) {
+        _products[index] = product;
+      }
 
-      fetchProducts(); // إعادة تحميل القائمة بعد التعديل
+      emit(
+        ProductLoaded(
+          products: List.from(_products),
+          successMessage: 'Product updated successfully',
+        ),
+      );
     });
   }
 
   Future<void> deleteProduct(String productId) async {
     emit(ProductLoading());
     final result = await deleteProductUseCase(productId);
-    result.fold(
-      (failure) => emit(ProductError(failure)),
-      (_) {
-        emit(ProductOperationSuccess('Product deleted successfully'));
+    result.fold((failure) => emit(ProductError(failure)), (_) {
+      // 1. حذف العنصر من القائمة المحلية فوراً
+      _products.removeWhere((product) => product.id == productId);
 
-        fetchProducts();
-      }, // إعادة تحميل القائمة بعد الحذف
-    );
+      emit(
+        ProductLoaded(
+          products: List.from(_products),
+          successMessage: 'Product deleted successfully',
+        ),
+      );
+    });
   }
 }
