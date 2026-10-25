@@ -268,8 +268,12 @@ class _AddProductPageState extends State<AddProductPage> {
         listeners: [
           BlocListener<ProductCubit, ProductState>(
             listener: (context, state) {
-              if (state is ProductOperationSuccess) {
-                showsnakbar(context, state.message, SnachBarState.success);
+              if (state is ProductLoaded && state.successMessage != null) {
+                showsnakbar(
+                  context,
+                  state.successMessage!,
+                  SnachBarState.success,
+                );
               } else if (state is ProductError) {
                 showsnakbar(
                   context,

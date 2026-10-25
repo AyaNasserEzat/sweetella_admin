@@ -21,8 +21,10 @@ class ProductCubit extends Cubit<ProductState> {
     emit(ProductLoading());
     final result = await getProductsUseCase();
     result.fold((failure) => emit(ProductError(failure)), (products) {
-      _products = products;
-      emit(ProductLoaded(products: products));
+      // 👇 هنا الحل: نحولها لـ List قابلة للتعديل والإضافة والحذف
+      _products = List.from(products);
+
+      emit(ProductLoaded(products: List.from(_products)));
     });
   }
 
