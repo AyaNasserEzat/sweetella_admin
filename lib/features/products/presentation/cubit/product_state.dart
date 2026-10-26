@@ -28,11 +28,6 @@ class ProductError extends ProductState {
   List<Object?> get props => [failure];
 }
 
-class ProductOperationSuccess extends ProductState {
-  final String message;
-  ProductOperationSuccess(this.message);
-}
-
 class AddProductLoading extends ProductState {}
 
 class DeleteProductLoading extends ProductState {}

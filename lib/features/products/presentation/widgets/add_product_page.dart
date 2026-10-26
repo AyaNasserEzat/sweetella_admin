@@ -660,9 +660,8 @@ class _AddProductPageState extends State<AddProductPage> {
 
                     BlocBuilder<ProductCubit, ProductState>(
                       buildWhen: (previous, current) =>
-                          current is ProductLoading ||
-                          current is ProductError ||
-                          current is ProductOperationSuccess,
+                          current is ProductLoading || current is ProductError,
+
                       builder: (context, state) {
                         return ElevatedButton(
                           style: ElevatedButton.styleFrom(
