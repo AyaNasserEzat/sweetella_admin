@@ -350,58 +350,58 @@ class _AddProductPageState extends State<AddProductPage> {
                     const SizedBox(height: 10),
                     BlocBuilder<CategoryCubit, CategoryState>(
                       builder: (context, state) {
-                        final categories = state is CategoryLoadSuccess
-                            ? state.categories
-                            : [];
+                        if (state is CategoryInitial ||
+                            state is CategoryLoading) {
+                          return const LinearProgressIndicator();
+                        }
 
-                        return DropdownButtonFormField<String>(
-                          initialValue:
-                              categories.any(
-                                (category) =>
-                                    category.id == _selectedCategoryId,
-                              )
-                              ? _selectedCategoryId
-                              : null,
-                          icon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: context.tokens.color.brand,
-                          ),
-                          decoration: const InputDecoration(
-                            hintText: 'Select a category',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: categories.map((category) {
-                            return DropdownMenuItem<String>(
-                              value: category.id,
-                              child: Text(
-                                category.categoryName,
-                                style: context.tokens.text.body,
-                              ),
-                            );
-                          }).toList(),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select a category';
-                            }
-                            return null;
-                          },
-                          onChanged: categories.isEmpty
-                              ? null
-                              : (categoryId) {
-                                  final selected = categories.firstWhere(
-                                    (category) => category.id == categoryId,
-                                  );
+                        if (state is CategoryLoadError) {
+                          return const Text('Failed to load categories');
+                        }
 
-                                  setState(() {
-                                    _selectedCategoryId = selected.id;
-                                    _selectedCategoryName =
-                                        selected.categoryName;
-                                  });
-                                },
-                          borderRadius: BorderRadius.circular(
-                            context.tokens.radius.md,
-                          ),
-                        );
+                        if (state is CategoryLoadSuccess) {
+                          final categories = state.categories;
+
+                          return DropdownButtonFormField<String>(
+                            value:
+                                categories.any(
+                                  (category) =>
+                                      category.id == _selectedCategoryId,
+                                )
+                                ? _selectedCategoryId
+                                : null,
+                            decoration: const InputDecoration(
+                              hintText: 'Select a category',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: categories.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category.id,
+                                child: Text(category.categoryName),
+                              );
+                            }).toList(),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a category';
+                              }
+                              return null;
+                            },
+                            onChanged: (categoryId) {
+                              if (categoryId == null) return;
+
+                              final selected = categories.firstWhere(
+                                (category) => category.id == categoryId,
+                              );
+
+                              setState(() {
+                                _selectedCategoryId = selected.id;
+                                _selectedCategoryName = selected.categoryName;
+                              });
+                            },
+                          );
+                        }
+
+                        return const Text('No categories available');
                       },
                     ),
                     const SizedBox(height: 10),
