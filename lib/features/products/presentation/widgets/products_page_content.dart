@@ -62,16 +62,4 @@ class ProductsPageContent extends StatelessWidget {
       ),
     );
   }
-
-  // Future<void> _openForm(BuildContext context, {Product? product}) async {
-  //   final cubit = context.read<ProductCubit>();
-  //   await showDialog<bool>(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (_) => ProductFormDialog(
-  //       product: product,
-  //       categories: const <ProductCategory>[],
-  //       onSave: product == null ? cubit.add : cubit.update,
-  //     ),
-  //   );
 }

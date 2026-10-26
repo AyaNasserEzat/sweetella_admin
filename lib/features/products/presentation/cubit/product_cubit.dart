@@ -65,8 +65,10 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<void> deleteProduct(String productId) async {
-    emit(ProductLoading());
+    //  emit(DeleteProductLoading());
     final result = await deleteProductUseCase(productId);
+    if (isClosed) return;
+
     result.fold((failure) => emit(ProductError(failure)), (_) {
       // 1. حذف العنصر من القائمة المحلية فوراً
       _products.removeWhere((product) => product.id == productId);

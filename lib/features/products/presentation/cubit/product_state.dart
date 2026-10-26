@@ -32,3 +32,9 @@ class ProductOperationSuccess extends ProductState {
   final String message;
   ProductOperationSuccess(this.message);
 }
+
+class AddProductLoading extends ProductState {}
+
+class DeleteProductLoading extends ProductState {}
+
+class UpdateProductLoading extends ProductState {}
