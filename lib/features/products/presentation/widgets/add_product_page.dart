@@ -358,50 +358,50 @@ class _AddProductPageState extends State<AddProductPage> {
                           return const Text('Failed to load categories');
                         }
 
-                        if (state is CategoryLoadSuccess) {
-                          final categories = state.categories;
-
-                          return DropdownButtonFormField<String>(
-                            value:
-                                categories.any(
-                                  (category) =>
-                                      category.id == _selectedCategoryId,
-                                )
-                                ? _selectedCategoryId
-                                : null,
-                            decoration: const InputDecoration(
-                              hintText: 'Select a category',
-                              border: OutlineInputBorder(),
-                            ),
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            items: categories.map((category) {
-                              return DropdownMenuItem<String>(
-                                value: category.id,
-                                child: Text(category.categoryName),
-                              );
-                            }).toList(),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select a category';
-                              }
-                              return null;
-                            },
-                            onChanged: (categoryId) {
-                              if (categoryId == null) return;
-
-                              final selected = categories.firstWhere(
-                                (category) => category.id == categoryId,
-                              );
-
-                              setState(() {
-                                _selectedCategoryId = selected.id;
-                                _selectedCategoryName = selected.categoryName;
-                              });
-                            },
-                          );
+                        if (state is! CategoryDataState) {
+                          return const Text('No categories available');
                         }
 
-                        return const Text('No categories available');
+                        final categories = state.categories;
+
+                        return DropdownButtonFormField<String>(
+                          value:
+                              categories.any(
+                                (category) =>
+                                    category.id == _selectedCategoryId,
+                              )
+                              ? _selectedCategoryId
+                              : null,
+                          decoration: const InputDecoration(
+                            hintText: 'Select a category',
+                            border: OutlineInputBorder(),
+                          ),
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          items: categories.map((category) {
+                            return DropdownMenuItem<String>(
+                              value: category.id,
+                              child: Text(category.categoryName),
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a category';
+                            }
+                            return null;
+                          },
+                          onChanged: (categoryId) {
+                            if (categoryId == null) return;
+
+                            final selected = categories.firstWhere(
+                              (category) => category.id == categoryId,
+                            );
+
+                            setState(() {
+                              _selectedCategoryId = selected.id;
+                              _selectedCategoryName = selected.categoryName;
+                            });
+                          },
+                        );
                       },
                     ),
                     const SizedBox(height: 10),

@@ -16,10 +16,7 @@ class CategoriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<CategoryCubit>()..loadCategories(),
-      child: const _CategoriesView(),
-    );
+    return const _CategoriesView();
   }
 }
 
