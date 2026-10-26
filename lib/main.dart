@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sweetella_admin/core/di/service_locator.dart';
 import 'package:sweetella_admin/core/theme/app_theme.dart';
 import 'package:sweetella_admin/core/theme/theme_cubit.dart';
+import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:sweetella_admin/features/home/presentation/pages/home_dashboard_page.dart';
 import 'package:sweetella_admin/firebase_options.dart';
 import 'package:sweetella_admin/l10n/generated/app_localizations.dart';
@@ -45,7 +46,14 @@ class SweetellaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => ThemeCubit())],
+      providers: [
+        BlocProvider(create: (_) => ThemeCubit()),
+
+        BlocProvider(
+          lazy: false,
+          create: (_) => sl<CategoryCubit>()..loadCategories(),
+        ),
+      ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
           return MaterialApp(

@@ -350,8 +350,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     const SizedBox(height: 10),
                     BlocBuilder<CategoryCubit, CategoryState>(
                       builder: (context, state) {
-                        if (state is CategoryInitial ||
-                            state is CategoryLoading) {
+                        if (state is CategoryLoading) {
                           return const LinearProgressIndicator();
                         }
 
@@ -374,6 +373,7 @@ class _AddProductPageState extends State<AddProductPage> {
                               hintText: 'Select a category',
                               border: OutlineInputBorder(),
                             ),
+                            icon: const Icon(Icons.keyboard_arrow_down),
                             items: categories.map((category) {
                               return DropdownMenuItem<String>(
                                 value: category.id,

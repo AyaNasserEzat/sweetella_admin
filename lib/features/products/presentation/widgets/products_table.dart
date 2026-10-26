@@ -69,10 +69,6 @@ class ProductsTable extends StatelessWidget {
                             BlocProvider(
                               create: (context) => sl<ProductCubit>(),
                             ),
-                            BlocProvider(
-                              create: (context) =>
-                                  sl<CategoryCubit>()..loadCategories(),
-                            ),
                           ],
 
                           child: AddProductPage(productToEdit: product),

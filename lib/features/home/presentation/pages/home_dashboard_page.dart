@@ -97,9 +97,6 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
               create: (_) => UploadImageCubit(sl<UploadImageUseCase>()),
             ),
             BlocProvider(create: (context) => sl<ProductCubit>()),
-            BlocProvider(
-              create: (context) => sl<CategoryCubit>()..loadCategories(),
-            ),
           ],
 
           child: const AddProductPage(),
