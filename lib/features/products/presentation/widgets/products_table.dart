@@ -7,6 +7,7 @@ import 'package:sweetella_admin/core/storage/domain/use_cases/upload_image_use_c
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 import 'package:sweetella_admin/core/widgets/custom_table.dart';
 import 'package:sweetella_admin/core/widgets/delete_dialog.dart';
+import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/custom_cached_network_image.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
@@ -64,8 +65,13 @@ class ProductsTable extends StatelessWidget {
                               create: (_) =>
                                   UploadImageCubit(sl<UploadImageUseCase>()),
                             ),
+
                             BlocProvider(
                               create: (context) => sl<ProductCubit>(),
+                            ),
+                            BlocProvider(
+                              create: (context) =>
+                                  sl<CategoryCubit>()..loadCategories(),
                             ),
                           ],
 
