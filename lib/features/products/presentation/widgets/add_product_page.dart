@@ -7,6 +7,8 @@ import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/error/app_failuer)localization.dart';
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 import 'package:sweetella_admin/core/widgets/snack_bar.dart';
+import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
+import 'package:sweetella_admin/features/categories/presentation/cubit/category_state.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/custom_text_field.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/image_upload_box.dart';
 import 'package:sweetella_admin/features/products/domain/entities/product.dart';
@@ -27,7 +29,8 @@ class _AddProductPageState extends State<AddProductPage> {
   final ImagePicker _picker = ImagePicker();
 
   late TextEditingController _nameController;
-  late TextEditingController _categoryController;
+  String? _selectedCategoryId;
+  String? _selectedCategoryName;
   late TextEditingController _descController;
   late TextEditingController _priceController;
   late TextEditingController _stockController;
@@ -55,9 +58,8 @@ class _AddProductPageState extends State<AddProductPage> {
     final product = widget.productToEdit;
 
     _nameController = TextEditingController(text: product?.name ?? '');
-    _categoryController = TextEditingController(
-      text: product?.categoryName ?? '',
-    );
+    _selectedCategoryId = product?.categoryId;
+    _selectedCategoryName = product?.categoryName;
     _descController = TextEditingController(text: product?.description ?? '');
 
     _stockController = TextEditingController(text: '10');
@@ -137,7 +139,6 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _categoryController.dispose();
     _descController.dispose();
 
     _singlePriceController.dispose();
@@ -221,8 +222,8 @@ class _AddProductPageState extends State<AddProductPage> {
             widget.productToEdit?.id ??
             DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameController.text,
-        categoryName: _categoryController.text,
-        categoryId: widget.productToEdit?.categoryId ?? '',
+        categoryName: _selectedCategoryName ?? '',
+        categoryId: _selectedCategoryId ?? '',
         description: _descController.text,
         imageUrl: imageUrl,
 
@@ -345,17 +346,66 @@ class _AddProductPageState extends State<AddProductPage> {
                     ),
 
                     const SizedBox(height: 10),
-
-                    CustomTextField(
-                      label: 'Category name',
-                      hintText: 'Category name',
-                      isRequired: true,
-                      controller: _categoryController,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Category name is required';
+                    Text('Category', style: context.tokens.text.titleSmall),
+                    const SizedBox(height: 10),
+                    BlocBuilder<CategoryCubit, CategoryState>(
+                      builder: (context, state) {
+                        if (state is CategoryLoading) {
+                          return const LinearProgressIndicator();
                         }
-                        return null;
+
+                        if (state is CategoryLoadSuccess) {
+                          final categories = state.categories;
+
+                          return DropdownButtonFormField<String>(
+                            initialValue:
+                                categories.any(
+                                  (category) =>
+                                      category.id == _selectedCategoryId,
+                                )
+                                ? _selectedCategoryId
+                                : null,
+                            icon: Icon(
+                              Icons.keyboard_arrow_down,
+                              color: context.tokens.color.brand,
+                            ),
+                            decoration: const InputDecoration(
+                              hintText: 'Select a category',
+                              border: OutlineInputBorder(),
+                            ),
+
+                            items: categories.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category.id,
+                                child: Text(
+                                  category.categoryName,
+                                  style: context.tokens.text.body,
+                                ),
+                              );
+                            }).toList(),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a category';
+                              }
+                              return null;
+                            },
+                            onChanged: (categoryId) {
+                              final selected = categories.firstWhere(
+                                (category) => category.id == categoryId,
+                              );
+
+                              setState(() {
+                                _selectedCategoryId = selected.id;
+                                _selectedCategoryName = selected.categoryName;
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(
+                              context.tokens.radius.md,
+                            ),
+                          );
+                        }
+
+                        return const Text('Failed to load categories');
                       },
                     ),
 

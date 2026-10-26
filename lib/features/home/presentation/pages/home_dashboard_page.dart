@@ -5,6 +5,7 @@ import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/di/service_locator.dart';
 import 'package:sweetella_admin/core/layout/breakpoints.dart';
 import 'package:sweetella_admin/core/storage/domain/use_cases/upload_image_use_case.dart';
+import 'package:sweetella_admin/features/categories/presentation/cubit/category_cubit.dart';
 import 'package:sweetella_admin/features/categories/presentation/pages/categories_page.dart';
 import 'package:sweetella_admin/features/orders/presentation/pages/orders_page.dart';
 import 'package:sweetella_admin/features/products/presentation/cubit/product_cubit.dart';
@@ -96,6 +97,9 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
               create: (_) => UploadImageCubit(sl<UploadImageUseCase>()),
             ),
             BlocProvider(create: (context) => sl<ProductCubit>()),
+            BlocProvider(
+              create: (context) => sl<CategoryCubit>()..loadCategories(),
+            ),
           ],
 
           child: const AddProductPage(),

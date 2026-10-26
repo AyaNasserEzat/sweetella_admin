@@ -29,7 +29,7 @@ class ProductsTable extends StatelessWidget {
           l10n.productName,
           'Sizes and Prices',
           // l10n.category,
-          l10n.price,
+          l10n.category,
           l10n.available,
           l10n.actions,
         ],
