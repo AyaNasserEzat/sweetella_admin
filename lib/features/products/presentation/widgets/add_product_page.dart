@@ -361,6 +361,29 @@ class _AddProductPageState extends State<AddProductPage> {
                         if (state is CategoryLoadSuccess) {
                           final categories = state.categories;
 
+                          if ((_selectedCategoryId == null ||
+                                  _selectedCategoryId!.isEmpty) &&
+                              _selectedCategoryName != null) {
+                            for (final category in categories) {
+                              if (category.categoryName ==
+                                  _selectedCategoryName) {
+                                _selectedCategoryId = category.id;
+                                break;
+                              }
+                            }
+                          }
+                          debugPrint(
+                            'Product category ID: $_selectedCategoryId',
+                          );
+                          debugPrint(
+                            'Product category name: $_selectedCategoryName',
+                          );
+
+                          for (final category in categories) {
+                            debugPrint(
+                              'Available category: ${category.id} - ${category.categoryName}',
+                            );
+                          }
                           return DropdownButtonFormField<String>(
                             value:
                                 categories.any(

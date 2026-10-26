@@ -66,7 +66,7 @@ class ProductModel {
     return ProductModel(
       id: docId,
       name: json['name'] ?? '',
-      categoryId: json['category'] ?? '',
+      categoryId: json['categoryId'] ?? '',
       categoryName: json['categoryName'] ?? '',
       description: json['description'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
