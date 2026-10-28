@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
+import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
+import 'package:sweetella_admin/features/categories/presentation/widgets/custom_text_field.dart';
 
 class ProductOptionControllers {
   ProductOptionControllers({
@@ -27,8 +29,7 @@ class ProductOptionRow extends StatelessWidget {
     required this.compact,
     required this.nameLabel,
     required this.nameHint,
-    required this.priceLabel,
-    required this.stockLabel,
+
     required this.deleteTooltip,
     required this.onDelete,
     super.key,
@@ -38,40 +39,30 @@ class ProductOptionRow extends StatelessWidget {
   final bool compact;
   final String nameLabel;
   final String nameHint;
-  final String priceLabel;
-  final String stockLabel;
+
   final String deleteTooltip;
   final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final nameField = TextFormField(
+    final nameField = CustomTextField(
       controller: controllers.nameController,
-      decoration: InputDecoration(
-        labelText: nameLabel,
-        hintText: nameHint,
-        border: const OutlineInputBorder(),
-        isDense: true,
-      ),
+      label: 'name',
+      hintText: 'name',
     );
-    final priceField = TextFormField(
+    final priceField = CustomTextField(
       controller: controllers.priceController,
+
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: priceLabel,
-        border: const OutlineInputBorder(),
-        isDense: true,
-      ),
+      label: 'price',
+      hintText: 'price',
     );
-    final stockField = TextFormField(
+    final stockField = CustomTextField(
       controller: controllers.stockController,
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: stockLabel,
-        border: const OutlineInputBorder(),
-        isDense: true,
-      ),
+      label: 'stock',
+      hintText: 'stock',
     );
     final deleteButton = IconButton(
       tooltip: deleteTooltip,
@@ -92,6 +83,7 @@ class ProductOptionRow extends StatelessWidget {
                 ),
                 SizedBox(height: tokens.space.sm),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(child: priceField),
                     SizedBox(width: tokens.space.sm),
@@ -100,15 +92,18 @@ class ProductOptionRow extends StatelessWidget {
                 ),
               ],
             )
-          : Row(
-              children: [
-                deleteButton,
-                Expanded(flex: 2, child: nameField),
-                SizedBox(width: tokens.space.sm),
-                Expanded(child: priceField),
-                SizedBox(width: tokens.space.sm),
-                Expanded(child: stockField),
-              ],
+          : CustomShadowContanier(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  deleteButton,
+                  Expanded(flex: 2, child: nameField),
+                  SizedBox(width: tokens.space.sm),
+                  Expanded(child: priceField),
+                  SizedBox(width: tokens.space.sm),
+                  Expanded(child: stockField),
+                ],
+              ),
             ),
     );
   }

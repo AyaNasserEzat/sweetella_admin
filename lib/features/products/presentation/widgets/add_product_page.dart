@@ -81,7 +81,7 @@ class _AddProductPageState extends State<AddProductPage> {
         );
       }
     } else {
-      _addVariantRow(name: 'صغير', price: '100', stock: '10', rebuild: false);
+      _addVariantRow(name: 'Small', price: '100', stock: '10', rebuild: false);
     }
 
     if (product != null && product.addons.isNotEmpty) {
@@ -101,7 +101,7 @@ class _AddProductPageState extends State<AddProductPage> {
       }
     } else {
       _addAddonRow(
-        name: 'صوص شوكولاتة',
+        name: 'Chocolate Sauce ',
         price: '100',
         stock: '10',
         rebuild: false,
@@ -337,7 +337,7 @@ class _AddProductPageState extends State<AddProductPage> {
             final breakpoint = AppBreakpoints.fromWidth(constraints.maxWidth);
             final isCompact = breakpoint == AppBreakpoint.compact;
             final tokens = context.tokens;
-            final pagePadding = isCompact ? tokens.space.md : tokens.space.xxl;
+            final pagePadding = isCompact ? tokens.space.sm : tokens.space.md;
 
             return SingleChildScrollView(
               padding: EdgeInsetsDirectional.only(
@@ -349,150 +349,162 @@ class _AddProductPageState extends State<AddProductPage> {
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 1000),
-                  child: CustomShadowContanier(
-                    child: Padding(
-                      padding: EdgeInsets.all(
-                        isCompact ? tokens.space.md : tokens.space.xxl,
-                      ),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              widget.productToEdit == null
-                                  ? 'إضافة منتج جديد'
-                                  : 'تعديل المنتج',
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: tokens.space.xl),
-                            ProductIdentitySection(
-                              breakpoint: breakpoint,
-                              nameController: _nameController,
-                              selectedCategoryId: _selectedCategoryId,
-                              imagePath: _selectedImagePath,
-                              onImageTap: _pickImage,
-                              selectedCategoryName: _selectedCategoryName,
-                              onCategorySelected: (id, name) {
-                                setState(() {
-                                  _selectedCategoryId = id;
-                                  _selectedCategoryName = name;
-                                });
-                              },
-                            ),
-                            SizedBox(height: tokens.space.md),
-
-                            CustomTextField(
-                              label: 'Description',
-                              hintText: 'Description',
-                              isRequired: true,
-                              controller: _descController,
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Description is required';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: tokens.space.md),
-                            ProductSectionSwitch(
-                              title:
-                                  'Is there a size or weight for this product?',
-                              subtitle:
-                                  'Size (small / medium / large) or (half a kilo / a kilo)',
-                              value: _hasVariants,
-                              onChanged: (value) {
-                                setState(() => _hasVariants = value);
-                              },
-                            ),
-                            if (!_hasVariants) ...[
-                              ProductPriceStockFields(
-                                priceController: _singlePriceController,
-                                stockController: _singleStockController,
-                                compact: isCompact,
-                              ),
-                            ] else ...[
-                              SizedBox(height: tokens.space.sm),
-                              ..._variantRows.asMap().entries.map(
-                                (entry) => ProductOptionRow(
-                                  controllers: entry.value,
-                                  compact: isCompact,
-                                  nameLabel: 'اسم الحجم',
-                                  nameHint: 'مثلاً: كبير',
-                                  priceLabel: 'السعر',
-                                  stockLabel: 'Stock',
-                                  deleteTooltip: 'Delete size',
-                                  onDelete: () =>
-                                      _removeVariantRow(entry.value, entry.key),
-                                ),
-                              ),
-                              Align(
-                                alignment: AlignmentDirectional.centerEnd,
-                                child: OutlinedButton.icon(
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: context.tokens.color.brand,
-                                  ),
-                                  onPressed: () => _addVariantRow(),
-                                  icon: const Icon(Icons.add),
-                                  label: const Text(
-                                    'Adding a new size or weight',
-                                  ),
-                                ),
-                              ),
-                            ],
-                            Divider(height: tokens.space.xxxl),
-                            ProductSectionSwitch(
-                              title: 'Is there an add-on for this product?',
-                              subtitle:
-                                  'Example: birthday candle, extra sauce, card',
-                              value: _hasAddons,
-                              onChanged: (value) {
-                                setState(() => _hasAddons = value);
-                              },
-                            ),
-                            if (_hasAddons) ...[
-                              SizedBox(height: tokens.space.sm),
-                              ..._addonsRows.asMap().entries.map(
-                                (entry) => ProductOptionRow(
-                                  controllers: entry.value,
-                                  compact: isCompact,
-                                  nameLabel: 'اسم الإضافة',
-                                  nameHint: 'مثلاً: علبة صوص شوكولاتة',
-                                  priceLabel: 'السعر',
-                                  stockLabel: 'المخزون',
-                                  deleteTooltip: 'Delete add-on',
-                                  onDelete: _addonsRows.length > 1
-                                      ? () => _removeAddonRow(
-                                          entry.value,
-                                          entry.key,
-                                        )
-                                      : null,
-                                ),
-                              ),
-                              Align(
-                                alignment: AlignmentDirectional.centerEnd,
-                                child: OutlinedButton.icon(
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: context.tokens.color.brand,
-                                  ),
-                                  onPressed: () => _addAddonRow(),
-                                  icon: const Icon(Icons.add),
-                                  label: const Text('إضافة إضافة جديدة'),
-                                ),
-                              ),
-                            ],
-                            Divider(height: tokens.space.xxxl),
-                            ProductSubmitButton(
-                              isEditing: widget.productToEdit != null,
-                              isSaving: _isSaving,
-                              onPressed: _saveProduct,
-                            ),
-                            SizedBox(height: tokens.space.xl),
-                          ],
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          widget.productToEdit == null
+                              ? 'Add Product  '
+                              : 'Edit Product',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
+                        SizedBox(height: tokens.space.xl),
+                        ProductIdentitySection(
+                          breakpoint: breakpoint,
+                          nameController: _nameController,
+                          selectedCategoryId: _selectedCategoryId,
+                          imagePath: _selectedImagePath,
+                          onImageTap: _pickImage,
+                          selectedCategoryName: _selectedCategoryName,
+                          onCategorySelected: (id, name) {
+                            setState(() {
+                              _selectedCategoryId = id;
+                              _selectedCategoryName = name;
+                            });
+                          },
+                        ),
+                        SizedBox(height: tokens.space.md),
+
+                        CustomShadowContanier(
+                          child: Column(
+                            children: [
+                              ProductSectionSwitch(
+                                title:
+                                    'Is there a size or weight for this product?',
+                                subtitle:
+                                    'Size (small / medium / large) or (half a kilo / a kilo)',
+                                value: _hasVariants,
+                                onChanged: (value) {
+                                  setState(() => _hasVariants = value);
+                                },
+                              ),
+                              if (!_hasVariants) ...[
+                                ProductPriceStockFields(
+                                  priceController: _singlePriceController,
+                                  stockController: _singleStockController,
+                                  compact: isCompact,
+                                ),
+                              ] else ...[
+                                SizedBox(height: tokens.space.sm),
+                                ..._variantRows.asMap().entries.map(
+                                  (entry) => ProductOptionRow(
+                                    controllers: entry.value,
+                                    compact: isCompact,
+                                    nameLabel: 'Size Name',
+                                    nameHint: 'e.g., Large',
+
+                                    deleteTooltip: 'Delete size',
+                                    onDelete: () => _removeVariantRow(
+                                      entry.value,
+                                      entry.key,
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor:
+                                          context.tokens.color.brand,
+                                    ),
+                                    onPressed: () => _addVariantRow(),
+                                    icon: const Icon(Icons.add),
+                                    label: const Text(
+                                      'Adding a new size or weight',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: tokens.space.md),
+                        CustomShadowContanier(
+                          child: Column(
+                            children: [
+                              ProductSectionSwitch(
+                                title: 'Is there an add-on for this product?',
+                                subtitle:
+                                    'Example: birthday candle, extra sauce, card',
+                                value: _hasAddons,
+                                onChanged: (value) {
+                                  setState(() => _hasAddons = value);
+                                },
+                              ),
+
+                              if (_hasAddons) ...[
+                                SizedBox(height: tokens.space.sm),
+                                ..._addonsRows.asMap().entries.map(
+                                  (entry) => ProductOptionRow(
+                                    controllers: entry.value,
+                                    compact: isCompact,
+                                    nameLabel: 'Option Name',
+                                    nameHint: 'e.g., Chocolate Sauce Box',
+                                    deleteTooltip: 'Delete add-on',
+                                    onDelete: _addonsRows.length > 1
+                                        ? () => _removeAddonRow(
+                                            entry.value,
+                                            entry.key,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: OutlinedButton.icon(
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor:
+                                          context.tokens.color.brand,
+                                    ),
+                                    onPressed: () => _addAddonRow(),
+                                    icon: const Icon(Icons.add),
+                                    label: const Text('إضافة إضافة جديدة'),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: tokens.space.md),
+                        CustomShadowContanier(
+                          child: CustomTextField(
+                            label: 'Description',
+                            hintText: 'Description',
+                            isRequired: true,
+                            controller: _descController,
+                            minLines: 4,
+                            maxLines: 6,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Description is required';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+
+                        SizedBox(height: tokens.space.xl),
+                        ProductSubmitButton(
+                          isEditing: widget.productToEdit != null,
+                          isSaving: _isSaving,
+                          onPressed: _saveProduct,
+                        ),
+                        SizedBox(height: tokens.space.xl),
+                      ],
                     ),
                   ),
                 ),

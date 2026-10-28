@@ -21,10 +21,7 @@ class ProductSectionSwitch extends StatelessWidget {
 
     return SwitchListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(
-        title,
-        style: tokens.text.body.copyWith(fontWeight: FontWeight.bold),
-      ),
+      title: Text(title, style: tokens.text.body),
       subtitle: Text(subtitle, style: tokens.text.bodySmall),
       value: value,
       activeThumbColor: tokens.color.brand,

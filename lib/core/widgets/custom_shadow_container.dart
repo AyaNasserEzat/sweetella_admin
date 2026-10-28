@@ -20,8 +20,9 @@ class CustomShadowContanier extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: context.tokens.color.surface,
+        border: Border.all(color: context.tokens.color.border, width: 1.5),
         borderRadius: BorderRadius.circular(context.tokens.radius.md),
-        boxShadow: context.tokens.shadow.low,
+        //boxShadow: context.tokens.shadow.low,
       ),
       child: Padding(padding: const EdgeInsets.all(16.0), child: child),
     );

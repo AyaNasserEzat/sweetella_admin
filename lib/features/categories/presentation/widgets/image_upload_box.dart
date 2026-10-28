@@ -7,14 +7,8 @@ import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 
 class ImageUploadBox extends StatelessWidget {
-  const ImageUploadBox({
-    required this.label,
-    required this.onTap,
-    this.imagePath,
-    super.key,
-  });
+  const ImageUploadBox({required this.onTap, this.imagePath, super.key});
 
-  final String label;
   final VoidCallback onTap;
   final String? imagePath;
 
@@ -27,7 +21,7 @@ class ImageUploadBox extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: tokens.text.titleSmall),
+        Text('Upload image', style: tokens.text.titleSmall),
         SizedBox(height: tokens.space.sm),
         GestureDetector(
           onTap: onTap,

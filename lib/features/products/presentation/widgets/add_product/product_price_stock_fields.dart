@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
+import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
+import 'package:sweetella_admin/features/categories/presentation/widgets/custom_text_field.dart';
 
 class ProductPriceStockFields extends StatelessWidget {
   const ProductPriceStockFields({
@@ -16,41 +18,39 @@ class ProductPriceStockFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final stock = TextFormField(
+    final stock = CustomTextField(
       controller: stockController,
       keyboardType: TextInputType.number,
-      decoration: const InputDecoration(
-        labelText: 'Stock',
-        border: OutlineInputBorder(),
-        isDense: true,
-      ),
+      label: 'stock',
+      hintText: 'stock',
     );
-    final price = TextFormField(
+    final price = CustomTextField(
       controller: priceController,
       keyboardType: TextInputType.number,
-      decoration: const InputDecoration(
-        labelText: 'Price',
-        border: OutlineInputBorder(),
-        isDense: true,
-      ),
+      label: 'price',
+      hintText: 'price',
     );
 
     if (compact) {
-      return Column(
-        children: [
-          stock,
-          SizedBox(height: tokens.space.md),
-          price,
-        ],
+      return CustomShadowContanier(
+        child: Column(
+          children: [
+            price,
+            SizedBox(height: tokens.space.md),
+            stock,
+          ],
+        ),
       );
     }
 
-    return Row(
-      children: [
-        Expanded(child: stock),
-        SizedBox(width: tokens.space.md),
-        Expanded(child: price),
-      ],
+    return CustomShadowContanier(
+      child: Row(
+        children: [
+          Expanded(child: price),
+          SizedBox(width: tokens.space.md),
+          Expanded(child: stock),
+        ],
+      ),
     );
   }
 }

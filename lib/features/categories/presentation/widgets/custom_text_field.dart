@@ -9,6 +9,8 @@ class CustomTextField extends StatelessWidget {
     this.controller,
     this.validator,
     this.maxLines = 1,
+    this.minLines = 1,
+    this.keyboardType = TextInputType.text,
     super.key,
   });
 
@@ -18,6 +20,8 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validator;
   final int maxLines;
+  final int minLines;
+  final TextInputType keyboardType;
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +45,13 @@ class CustomTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           validator: validator,
+          minLines: minLines,
           maxLines: maxLines,
+          keyboardType: maxLines > 1 ? TextInputType.multiline : keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
             label: Text(label, style: context.tokens.text.label),
+            alignLabelWithHint: maxLines > 1,
           ),
         ),
       ],

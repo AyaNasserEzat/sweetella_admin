@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sweetella_admin/core/design/app_tokens.dart';
 import 'package:sweetella_admin/core/layout/breakpoints.dart';
+import 'package:sweetella_admin/core/widgets/custom_shadow_container.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/custom_text_field.dart';
 import 'package:sweetella_admin/features/categories/presentation/widgets/image_upload_box.dart';
 import 'package:sweetella_admin/features/products/presentation/widgets/add_product/product_category_field.dart';
@@ -47,52 +48,49 @@ class _ProductIdentitySectionState extends State<ProductIdentitySection> {
     );
     final categoryField = ProductCategoryField(
       selectedCategoryId: widget.selectedCategoryId,
-      // onSelected: widget.onCategorySelected,
-      onSelected: (id, name) {
-        setState(() {
-          widget.selectedCategoryId = id;
-          widget.selectedCategoryName = name;
-        });
-      },
+      onSelected: widget.onCategorySelected,
     );
     final imageUpload = ImageUploadBox(
-      label: 'Upload image',
       imagePath: widget.imagePath,
       onTap: widget.onImageTap,
     );
 
     if (widget.breakpoint == AppBreakpoint.expanded) {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                nameField,
-                SizedBox(height: tokens.space.md),
-                categoryField,
-              ],
+      return CustomShadowContanier(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  nameField,
+                  SizedBox(height: tokens.space.md),
+                  categoryField,
+                ],
+              ),
             ),
-          ),
-          SizedBox(width: tokens.space.xxl),
-          SizedBox(width: 450, child: imageUpload),
-        ],
+            SizedBox(width: tokens.space.xxl),
+            SizedBox(width: 450, child: imageUpload),
+          ],
+        ),
       );
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: imageUpload,
+    return CustomShadowContanier(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: imageUpload,
+            ),
           ),
-        ),
-        SizedBox(height: tokens.space.lg),
-        nameField,
-        SizedBox(height: tokens.space.md),
-        categoryField,
-      ],
+          SizedBox(height: tokens.space.lg),
+          nameField,
+          SizedBox(height: tokens.space.md),
+          categoryField,
+        ],
+      ),
     );
   }
 }

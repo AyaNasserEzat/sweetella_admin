@@ -133,7 +133,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
                         ),
                         const SizedBox(height: 24),
                         ImageUploadBox(
-                          label: 'Upload image',
                           imagePath: _selectedImagePath,
                           onTap: _pickImage,
                         ),
