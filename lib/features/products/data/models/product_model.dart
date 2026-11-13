@@ -167,12 +167,17 @@ class ProductVariantModel {
       id: json['id'] ?? '',
       sizeName: json['sizeName'] ?? '',
       price: (json['price'] as num).toDouble(),
-      stock: json['dailyStock'] ?? 0,
+      stock: json['stock'] ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'sizeName': sizeName, 'price': price, 'stock': stock};
+    return {
+      'id': id,
+      'sizeName': sizeName,
+      'price': price,
+      'dailyStock': stock,
+    };
   }
 
   factory ProductVariantModel.fromEntity(ProductVariantEntity entity) {

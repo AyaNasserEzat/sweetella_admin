@@ -16,24 +16,24 @@ class ProductSubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final buttonColor = tokens.text.button.color;
 
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: tokens.color.brand,
-          foregroundColor: buttonColor,
-          disabledBackgroundColor: tokens.color.textSecondary,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: tokens.color.brand,
+          disabledForegroundColor: Colors.white,
           padding: EdgeInsets.symmetric(vertical: tokens.space.md),
         ),
         onPressed: isSaving ? null : onPressed,
         child: isSaving
             ? SizedBox.square(
                 dimension: tokens.size.icon + tokens.space.xs,
-                child: CircularProgressIndicator(
+                child: const CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  color: buttonColor,
+                  color: Colors.white,
                 ),
               )
             : Text(isEditing ? 'تعديل المنتج' : 'حفظ وإضافة'),

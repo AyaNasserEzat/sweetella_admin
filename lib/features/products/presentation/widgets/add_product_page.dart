@@ -337,7 +337,7 @@ class _AddProductPageState extends State<AddProductPage> {
             final breakpoint = AppBreakpoints.fromWidth(constraints.maxWidth);
             final isCompact = breakpoint == AppBreakpoint.compact;
             final tokens = context.tokens;
-            final pagePadding = isCompact ? tokens.space.sm : tokens.space.md;
+            final pagePadding = isCompact ? tokens.space.md : tokens.space.sm;
 
             return SingleChildScrollView(
               padding: EdgeInsetsDirectional.only(
@@ -366,6 +366,7 @@ class _AddProductPageState extends State<AddProductPage> {
                         ProductIdentitySection(
                           breakpoint: breakpoint,
                           nameController: _nameController,
+                          descriptionController: _descController,
                           selectedCategoryId: _selectedCategoryId,
                           imagePath: _selectedImagePath,
                           onImageTap: _pickImage,
@@ -477,23 +478,6 @@ class _AddProductPageState extends State<AddProductPage> {
                                 ),
                               ],
                             ],
-                          ),
-                        ),
-                        SizedBox(height: tokens.space.md),
-                        CustomShadowContanier(
-                          child: CustomTextField(
-                            label: 'Description',
-                            hintText: 'Description',
-                            isRequired: true,
-                            controller: _descController,
-                            minLines: 4,
-                            maxLines: 6,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Description is required';
-                              }
-                              return null;
-                            },
                           ),
                         ),
 

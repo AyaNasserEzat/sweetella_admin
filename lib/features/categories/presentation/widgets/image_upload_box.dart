@@ -32,9 +32,9 @@ class ImageUploadBox extends StatelessWidget {
               dashPattern: const [6, 4],
               radius: Radius.circular(tokens.radius.md),
             ),
-            child: CustomShadowContanier(
+            child: SizedBox(
               width: double.infinity,
-              height: tokens.size.productImageHeight + 84,
+              height: tokens.size.productImageHeight + 160,
               child: imagePath == null || imagePath.isEmpty
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,

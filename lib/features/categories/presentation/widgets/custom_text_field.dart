@@ -50,7 +50,7 @@ class CustomTextField extends StatelessWidget {
           keyboardType: maxLines > 1 ? TextInputType.multiline : keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
-            label: Text(label, style: context.tokens.text.label),
+            //label: Text(label, style: context.tokens.text.label),
             alignLabelWithHint: maxLines > 1,
           ),
         ),

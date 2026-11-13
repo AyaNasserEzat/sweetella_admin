@@ -297,25 +297,25 @@ class AppTextTokens {
     display: TextStyle(
       fontSize: 28,
       fontFamily: 'Nunito',
-      fontVariations: [FontVariation('wght', 900)],
+      fontVariations: [FontVariation('wght', 700)],
       color: Color(0xFF2D2D2D),
     ),
     title: TextStyle(
       fontSize: 22,
       fontFamily: 'Nunito',
-      fontVariations: [FontVariation('wght', 900)],
+      fontVariations: [FontVariation('wght', 700)],
       color: Color(0xFF2D2D2D),
     ),
     titleSmall: TextStyle(
       fontSize: 16,
       fontFamily: 'Nunito',
-      fontVariations: [FontVariation('wght', 900)],
+      fontVariations: [FontVariation('wght', 700)],
       color: Color(0xFF2D2D2D),
     ),
     body: TextStyle(
       fontSize: 14,
       fontFamily: 'Nunito',
-      fontVariations: [FontVariation('wght', 900)],
+      fontVariations: [FontVariation('wght', 700)],
       color: Color(0xFF2D2D2D),
     ),
     bodySmall: TextStyle(
@@ -334,19 +334,19 @@ class AppTextTokens {
     value: TextStyle(
       fontSize: 22,
       fontFamily: 'Nunito',
-      fontVariations: [FontVariation('wght', 900)],
+      fontVariations: [FontVariation('wght', 700)],
       color: Color(0xFF2D2D2D),
     ),
     valueLarge: TextStyle(
       fontSize: 28,
       fontFamily: 'Nunito',
-      fontVariations: [FontVariation('wght', 900)],
+      fontVariations: [FontVariation('wght', 700)],
       color: Color(0xFF2D2D2D),
     ),
     amount: TextStyle(
       fontSize: 18,
       fontFamily: 'Nunito',
-      fontVariations: [FontVariation('wght', 900)],
+      fontVariations: [FontVariation('wght', 700)],
       color: Color(0xFF2D2D2D),
     ),
     button: TextStyle(

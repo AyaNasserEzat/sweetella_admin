@@ -10,6 +10,7 @@ class ProductIdentitySection extends StatefulWidget {
   ProductIdentitySection({
     required this.breakpoint,
     required this.nameController,
+    required this.descriptionController,
     required this.selectedCategoryId,
     required this.selectedCategoryName,
     required this.imagePath,
@@ -20,6 +21,7 @@ class ProductIdentitySection extends StatefulWidget {
 
   final AppBreakpoint breakpoint;
   final TextEditingController nameController;
+  final TextEditingController descriptionController;
   String? selectedCategoryId;
   String? selectedCategoryName;
   final String? imagePath;
@@ -55,6 +57,21 @@ class _ProductIdentitySectionState extends State<ProductIdentitySection> {
       onTap: widget.onImageTap,
     );
 
+    final descriptionField = CustomTextField(
+      label: 'Description',
+      hintText: 'Description',
+      isRequired: true,
+      controller: widget.descriptionController,
+      minLines: 4,
+      maxLines: 6,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Description is required';
+        }
+        return null;
+      },
+    );
+
     if (widget.breakpoint == AppBreakpoint.expanded) {
       return CustomShadowContanier(
         child: Row(
@@ -62,11 +79,8 @@ class _ProductIdentitySectionState extends State<ProductIdentitySection> {
           children: [
             Expanded(
               child: Column(
-                children: [
-                  nameField,
-                  SizedBox(height: tokens.space.md),
-                  categoryField,
-                ],
+                spacing: tokens.space.md,
+                children: [nameField, categoryField, descriptionField],
               ),
             ),
             SizedBox(width: tokens.space.xxl),
@@ -89,6 +103,8 @@ class _ProductIdentitySectionState extends State<ProductIdentitySection> {
           nameField,
           SizedBox(height: tokens.space.md),
           categoryField,
+          SizedBox(height: tokens.space.md),
+          descriptionField,
         ],
       ),
     );

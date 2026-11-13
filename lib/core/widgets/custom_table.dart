@@ -31,7 +31,7 @@ class CustomTable extends StatelessWidget {
                 child: DataTable(
                   columnSpacing: context.tokens.size.icon,
                   dataRowMinHeight: 20,
-                  dataRowMaxHeight: 70,
+                  dataRowMaxHeight: 100,
                   horizontalMargin: 20,
 
                   headingRowColor: WidgetStateProperty.all(
@@ -45,9 +45,7 @@ class CustomTable extends StatelessWidget {
                             child: Skeleton.keep(
                               child: Text(
                                 title,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: context.tokens.text.titleSmall,
                               ),
                             ),
                           ),
